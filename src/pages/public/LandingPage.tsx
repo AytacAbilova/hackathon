@@ -1,148 +1,195 @@
-import heroImg from '../../assets/hero.png'
+import styles from "./LandingPage.module.css"
+import {
+  Calendar,
+  Megaphone,
+  CalendarDays,
+  Users,
+  Search,
+  Briefcase,
+  Globe,
+  Share2,
+  Code2,
+  Server,
+  Pen,
+  BarChart2,
+  ArrowRight,
+} from "lucide-react"
 
 export default function LandingPage() {
   const courses = [
-    { title: 'Frontend (React)', meta: '12 dərs · Praktika', level: 'Beginner' },
-    { title: 'Backend (Node.js)', meta: '10 dərs · API', level: 'Intermediate' },
-    { title: 'UI/UX Design', meta: '8 dərs · Figma', level: 'Beginner' },
-    { title: 'Data Basics', meta: '6 dərs · Analitika', level: 'Starter' },
-  ]
-
-  const features = [
-    { title: 'Dərs cədvəli', desc: 'Cədvələ 1 yerdən sürətli çıxış' },
-    { title: 'Elanlar', desc: 'Müəllim elan yaradır, admin təsdiqləyir' },
-    { title: 'Eventlər', desc: 'Workshop və meetup-lar bir yerdə' },
-    { title: 'Team Finder', desc: 'Skill-lərlə komanda qurmaq' },
-    { title: 'Lost & Found', desc: 'Əlaqə ilə itmiş əşyaları tap' },
-    { title: 'Vakansiyalar', desc: 'Karyera imkanlarını izləmək' },
+    { title: "Frontend (React)", meta: "12 dərs · Praktika", level: "Beginner", icon: <Code2 size={18} /> },
+    { title: "Backend (Node.js)", meta: "10 dərs · API", level: "Intermediate", icon: <Server size={18} /> },
+    { title: "UI/UX Design", meta: "8 dərs · Figma", level: "Beginner", icon: <Pen size={18} /> },
+    { title: "Data Basics", meta: "6 dərs · Analitika", level: "Starter", icon: <BarChart2 size={18} /> },
   ]
 
   const stats = [
-    { label: 'Aktiv istifadəçi', value: '1K+' },
-    { label: 'Elan & event', value: '250+' },
-    { label: 'Komanda elanları', value: '120+' },
+    { label: "Aktiv istifadəçi", value: "1K+" },
+    { label: "Elan & event", value: "250+" },
+    { label: "Komanda elanları", value: "120+" },
   ]
 
+  const badgeClass: Record<string, string> = {
+    Beginner: styles.badgeBeginner,
+    Intermediate: styles.badgeIntermediate,
+    Starter: styles.badgeStarter,
+  }
+
   return (
-    <div className="landing">
-      <section className="landingHero">
-        <div className="landingHeroLeft">
-          <div className="landingKicker">Education platform</div>
-          <h1 className="landingTitle">
-            Akademiyada bütün məlumatlar <span className="accentText">vahid platformada</span>
-          </h1>
-          <p className="landingLead">
-            Dərs cədvəli, elanlar, eventlər, vakansiyalar, komanda qurmaq və lost &amp; found
-            funksionallığı — hamısı bir yerdə.
-          </p>
-          <div className="landingCtas">
-            <a className="ctaPrimary" href="#/login">
-              Login
-            </a>
-            <a className="ctaSecondary" href="#/register">
-              Qeydiyyat
-            </a>
+    <div className={styles.page}>
+
+      {/* ── HERO ── */}
+      <section className={styles.hero}>
+        {/* Left content */}
+        <div className={styles.heroContent}>
+          <div className={styles.heroBadge}>
+            <span className={styles.heroBadgeDot} />
+            Yeni Nəsil Öyrənmə
           </div>
 
-          <div className="landingStats">
+          <h1 className={styles.heroTitle}>
+            Akademiyada bütün məlumatlar{" "}
+            <span className={styles.heroAccent}>vahid platformada</span>
+          </h1>
+
+          <p className={styles.heroDesc}>
+            Dərs cədvəli, elanlar, eventlər, vakansiyalar, komanda qurmaq və
+            lost &amp; found funksionallığı — hamısı bir yerdə.
+          </p>
+
+          <div className={styles.heroCta}>
+            <a href="#/login" className={styles.btnPrimary}>Login</a>
+            <a href="#/register" className={styles.btnOutline}>Qeydiyyat</a>
+          </div>
+
+          <div className={styles.heroStats}>
             {stats.map((s) => (
-              <div key={s.label} className="statMini">
-                <div className="statMiniValue">{s.value}</div>
-                <div className="statMiniLabel">{s.label}</div>
+              <div key={s.label}>
+                <div className={styles.statValue}>{s.value}</div>
+                <div className={styles.statLabel}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="landingHeroRight">
-          <div className="heroCardFloat">
-            <div className="heroCardFloatTop">
-              <div className="heroDot" />
-              <div className="heroDot heroDot2" />
-              <div className="heroDot heroDot3" />
+        {/* Right visual card */}
+        <div className={styles.heroVisual}>
+          <div className={styles.heroCard}>
+            <div className={styles.heroCardChrome}>
+              <span className={`${styles.chromeDot} ${styles.chromeDotRed}`} />
+              <span className={`${styles.chromeDot} ${styles.chromeDotYellow}`} />
+              <span className={`${styles.chromeDot} ${styles.chromeDotGreen}`} />
+              <span className={styles.chromeNewBadge}>New</span>
             </div>
-            <div className="heroCardFloatBody">
-              <div className="heroBadge">New</div>
-              <div className="heroCardTitle">Academy Hub</div>
-              <div className="heroCardDesc">İdarəetmə + tələbə bölmələri + elanlar</div>
-            </div>
-          </div>
 
-          <div className="heroVisual">
-            <img className="heroImg" src={heroImg} alt="" />
+            <div className={styles.heroCardPreview}>
+              <div className={styles.previewRow}>
+                <div className={styles.previewBlockBlue} />
+                <div className={styles.previewBlockTeal} />
+              </div>
+              <div className={styles.previewRow}>
+                <div className={styles.previewBlockWhiteShort} />
+                <div className={styles.previewBlockWhiteFlex} />
+              </div>
+              <div className={styles.previewBlockCta} />
+            </div>
+
+            <div className={styles.heroCardFooter}>
+              <div className={styles.heroCardTitle}>Academy Hub</div>
+              <div className={styles.heroCardSub}>
+                İdarəetmə + tələbə bölmələri + elanlar
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="landingSection">
-        <div className="sectionHeader">
+      {/* ── COURSES ── */}
+      <section className={styles.section}>
+        <div className={styles.coursesHeader}>
           <div>
-            <div className="sectionKicker">Popular</div>
-            <h2 className="sectionTitle">İstiqamətlər</h2>
+            <div className={styles.sectionLabel}>Popular</div>
+            <h2 className={styles.sectionTitle}>İstiqamətlər</h2>
           </div>
-          <a className="sectionLink" href="#/login">
-            Platformaya keç
+
+          <a href="#/login" className={styles.coursesLink}>
+            Platformaya keç <ArrowRight size={14} />
           </a>
         </div>
 
-        <div className="cardsGrid">
+        <div className={styles.coursesGrid}>
           {courses.map((c) => (
-            <div key={c.title} className="courseCard">
-              <div className="courseTop">
-                <div className="courseIcon" />
-                <span className="pill pillInfo">{c.level}</span>
+            <div key={c.title} className={styles.courseCard}>
+              <div className={styles.courseCardTop}>
+                <div className={styles.courseIcon}>{c.icon}</div>
+                <span className={`${styles.badge} ${badgeClass[c.level] ?? ""}`}>
+                  {c.level}
+                </span>
               </div>
-              <div className="courseTitle">{c.title}</div>
-              <div className="courseMeta">{c.meta}</div>
-              <div className="courseActions">
-                <a className="miniLink" href="#/login">
-                  Bax
-                </a>
-                <a className="miniCta" href="#/register">
-                  Qeydiyyat
-                </a>
+
+              <div>
+                <div className={styles.courseTitle}>{c.title}</div>
+                <div className={styles.courseMeta}>{c.meta}</div>
+              </div>
+
+              <div className={styles.courseActions}>
+                <a href="#/login" className={styles.courseActionView}>Bax</a>
+                <a href="#/register" className={styles.courseActionReg}>Qeydiyyat</a>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="landingSection">
-        <div className="sectionHeader">
-          <div>
-            <div className="sectionKicker">Why us</div>
-            <h2 className="sectionTitle">Sürətli və rahat çıxış</h2>
-          </div>
+      {/* ── FEATURES ── */}
+      <section className={styles.section}>
+        <div className={styles.featuresIntro}>
+          <div className={styles.sectionLabel}>Why us</div>
+          <h2 className={styles.sectionTitle}>Sürətli və rahat çıxış</h2>
         </div>
 
-        <div className="featuresGrid">
-          {features.map((f) => (
-            <div key={f.title} className="featureCard">
-              <div className="featureIcon" />
-              <div className="featureTitle">{f.title}</div>
-              <div className="featureDesc">{f.desc}</div>
+        <div className={styles.featuresGrid}>
+          <div className={styles.featureCardFeatured}>
+            <div className={styles.featureIconFeatured}>
+              <Calendar size={24} />
             </div>
-          ))}
+            <div className={styles.featureTitleFeatured}>Dərs cədvəli</div>
+            <div className={styles.featureDescFeatured}>
+              Cədvələ 1 yerdən sürətli çıxış imkanı ilə planlamanızı asanlaşdırın.
+            </div>
+          </div>
+
+          <div className={styles.featureCard}>
+            <div className={styles.featureIcon}><Megaphone size={20} /></div>
+            <div className={styles.featureTitle}>Elanlar</div>
+          </div>
+
+          <div className={styles.featureCard}>
+            <div className={styles.featureIcon}><CalendarDays size={20} /></div>
+            <div className={styles.featureTitle}>Eventlər</div>
+          </div>
+
+          <div className={styles.featureCard}>
+            <div className={styles.featureIcon}><Users size={20} /></div>
+            <div className={styles.featureTitle}>Team Finder</div>
+          </div>
+
+          <div className={styles.featureCard}>
+            <div className={styles.featureIcon}><Search size={20} /></div>
+            <div className={styles.featureTitle}>Lost & Found</div>
+          </div>
+
+          <div className={styles.featureCardWide}>
+            <div className={styles.featureCardWideText}>
+              <div className={styles.featureTitle}>Vakansiyalar</div>
+            </div>
+            <div className={styles.featureIconWide}>
+              <Briefcase size={28} />
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="landingSection landingCtaSection">
-        <div className="ctaBlock">
-          <div>
-            <div className="ctaKicker">Get started</div>
-            <h2 className="ctaTitle">İndi daxil ol və platformanı istifadə et</h2>
-            <p className="ctaDesc">Admin, müəllim və tələbə rolları ilə səlis idarəetmə.</p>
-          </div>
-          <div className="ctaButtons">
-            <a className="ctaPrimary" href="#/login">
-              Login
-            </a>
-            <a className="ctaSecondary" href="#/register">
-              Qeydiyyat
-            </a>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
