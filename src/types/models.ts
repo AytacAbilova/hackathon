@@ -59,7 +59,9 @@ export type TeamPost = {
   skills: string[]
   contact: string
   createdAt: string
+  updatedAt?: string
   createdByUserId: string
+  createdByName?: string
 }
 
 export type Stats = {

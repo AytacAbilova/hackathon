@@ -16,6 +16,7 @@ import TeacherEvents from './pages/teacher/TeacherEvents'
 import StudentHome from './pages/student/StudentHome'
 import StudentLostFound from './pages/student/StudentLostFound'
 import StudentTeamFinder from './pages/student/StudentTeamFinder'
+import ChatbotPage from './pages/chatbot/ChatbotPage'
 import AdminSidebar from './components/admin/AdminSidebar'
 import AdminTopbar from './components/admin/AdminTopbar'
 import StudentSidebar from './components/student/StudentSidebar'
@@ -25,6 +26,8 @@ import { getSessionFromAccessToken } from './lib/jwt'
 import * as authService from './services/auth'
 import * as announcementsService from './services/announcements'
 import * as lostFoundService from './services/lostFound'
+import * as teamFinderService from './services/teamFinder'
+import * as adminUsersService from './services/adminUsers'
 import type {
   Announcement,
   AnnouncementCategory,
@@ -77,7 +80,8 @@ function App() {
   const [pendingAnnouncements, setPendingAnnouncements] = useState<Announcement[]>([])
   const [events, setEvents] = useState<EventItem[]>(() => readJson<EventItem[]>(storageKeys.events, []))
   const [lostFoundItems, setLostFoundItems] = useState<LostFoundPost[]>([])
-  const [teamPosts, setTeamPosts] = useState<TeamPost[]>(() => readJson<TeamPost[]>(storageKeys.teamPosts, []))
+  const [teamFinderItems, setTeamFinderItems] = useState<TeamPost[]>([])
+  const [adminUsersItems, setAdminUsersItems] = useState<User[]>([])
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
     const stored = localStorage.getItem(storageKeys.currentUserId)
@@ -101,10 +105,6 @@ function App() {
   useEffect(() => {
     writeJson(storageKeys.events, events)
   }, [events])
-
-  useEffect(() => {
-    writeJson(storageKeys.teamPosts, teamPosts)
-  }, [teamPosts])
 
   useEffect(() => {
     if (!currentUser) {
@@ -132,7 +132,8 @@ function App() {
       const ok =
         route === '/student' ||
         route === '/student/lost-found' ||
-        route === '/student/team-finder'
+        route === '/student/team-finder' ||
+        route === '/student/chatbot'
       if (route.startsWith('/student') && !ok) {
         navigate('/student')
       }
@@ -146,6 +147,8 @@ function App() {
       setApprovedAnnouncements([])
       setPendingAnnouncements([])
       setLostFoundItems([])
+      setTeamFinderItems([])
+      setAdminUsersItems([])
       toast.success('Çıxış edildi')
       navigate('/login')
     }
@@ -172,6 +175,63 @@ function App() {
         if (cancelled) return
         const merged = [...res[0].items, ...res[1].items, ...res[2].items]
         setLostFoundItems(sortByCreatedAtDesc(merged))
+      })
+      .catch((e) => {
+        if (cancelled) return
+        toast.error(getApiErrorMessage(e))
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentUser?.role])
+
+  const loadTeamFinder = async (skillSearch?: string) => {
+    try {
+      const res = await teamFinderService.list({ page: 1, pageSize: 50, ...(skillSearch ? { skillSearch } : {}) })
+      setTeamFinderItems(sortByCreatedAtDesc(res.items))
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
+    }
+  }
+
+  useEffect(() => {
+    if (!currentUser) return
+    let cancelled = false
+
+    teamFinderService
+      .list({ page: 1, pageSize: 50 })
+      .then((res) => {
+        if (cancelled) return
+        setTeamFinderItems(sortByCreatedAtDesc(res.items))
+      })
+      .catch((e) => {
+        if (cancelled) return
+        toast.error(getApiErrorMessage(e))
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentUser, currentUserId])
+
+  const loadAdminUsers = async () => {
+    if (currentUser?.role !== 'admin') return
+    const res = await adminUsersService.list({ page: 1, limit: 100 })
+    setAdminUsersItems(sortByCreatedAtDesc(res.items))
+    setUsers(res.items)
+  }
+
+  useEffect(() => {
+    if (currentUser?.role !== 'admin') return
+
+    let cancelled = false
+    adminUsersService
+      .list({ page: 1, limit: 100 })
+      .then((res) => {
+        if (cancelled) return
+        setAdminUsersItems(sortByCreatedAtDesc(res.items))
+        setUsers(res.items)
       })
       .catch((e) => {
         if (cancelled) return
@@ -514,23 +574,56 @@ function App() {
       toast.error('Əlaqə məlumatı mütləqdir')
       return
     }
+    void teamFinderService
+      .create({
+        title: title.trim(),
+        skillsNeeded: skills.join(', '),
+        description: `${description.trim()}\nƏlaqə: ${contact.trim()}`.trim(),
+      })
+      .then(async () => {
+        toast.success('Komanda elanı əlavə olundu')
+        await loadTeamFinder()
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
+  }
 
-    const post: TeamPost = {
-      id: makeId('team'),
-      title: title.trim(),
-      description: description.trim(),
-      skills,
-      contact: contact.trim(),
-      createdAt: nowIso(),
-      createdByUserId: currentUser.id,
+  const updateTeamPost = (id: string, title: string, description: string, skillsRaw: string, contact: string) => {
+    if (!currentUser) return
+    const skills = skillsRaw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+    if (!title.trim() || !description.trim() || skills.length === 0 || !contact.trim()) {
+      toast.error('Bütün sahələr mütləqdir')
+      return
     }
-    setTeamPosts((prev) => [post, ...prev])
-    toast.success('Komanda elanı əlavə olundu')
+    void teamFinderService
+      .update(id, {
+        title: title.trim(),
+        skillsNeeded: skills.join(', '),
+        description: `${description.trim()}\nƏlaqə: ${contact.trim()}`.trim(),
+      })
+      .then(async () => {
+        toast.success('Yeniləndi')
+        await loadTeamFinder()
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
+  }
+
+  const deleteTeamPost = (id: string) => {
+    if (!currentUser) return
+    void teamFinderService
+      .remove(id)
+      .then(async () => {
+        toast.success('Silindi')
+        await loadTeamFinder()
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
   }
 
   const eventsSorted = useMemo(() => sortByCreatedAtDesc(events), [events])
   const lostFoundSorted = useMemo(() => sortByCreatedAtDesc(lostFoundItems), [lostFoundItems])
-  const teamPostsSorted = useMemo(() => sortByCreatedAtDesc(teamPosts), [teamPosts])
+  const teamPostsSorted = useMemo(() => sortByCreatedAtDesc(teamFinderItems), [teamFinderItems])
 
   const stats = useMemo(() => {
     const byRole = users.reduce(
@@ -547,7 +640,7 @@ function App() {
       announcementsApproved: approvedAnnouncements.length,
       eventsTotal: events.length,
       lostFoundTotal: lostFoundItems.length,
-      teamPostsTotal: teamPosts.length,
+      teamPostsTotal: teamFinderItems.length,
     }
     return s
   }, [
@@ -555,7 +648,7 @@ function App() {
     events.length,
     lostFoundItems.length,
     pendingAnnouncements.length,
-    teamPosts.length,
+    teamFinderItems.length,
     users,
   ])
 
@@ -574,12 +667,14 @@ function App() {
         { to: '/teacher', label: 'İdarə paneli' },
         { to: '/teacher/announcements', label: 'Elan yarat' },
         { to: '/teacher/events', label: 'Tədbir əlavə et' },
+        { to: '/teacher/chatbot', label: 'Chatbot' },
       ]
     }
     return [
       { to: '/student', label: 'İdarə paneli' },
       { to: '/student/lost-found', label: 'İtirilən və tapılan' },
       { to: '/student/team-finder', label: 'Komanda tapıcı' },
+      { to: '/student/chatbot', label: 'Chatbot' },
     ]
   }, [currentUser])
 
@@ -588,12 +683,15 @@ function App() {
     if (route.startsWith('/admin/users')) return 'İstifadəçi siyahısı'
     if (route.startsWith('/admin/announcements')) return 'Elanlar'
     if (route.startsWith('/admin/stats')) return 'Analitika'
+    if (route.startsWith('/admin/chatbot')) return 'Chatbot'
     if (route.startsWith('/admin')) return 'Admin konsolu'
     if (route.startsWith('/teacher/announcements')) return 'Elan yaratma'
     if (route.startsWith('/teacher/events')) return 'Tədbir əlavə etmə'
+    if (route.startsWith('/teacher/chatbot')) return 'Chatbot'
     if (route.startsWith('/teacher')) return 'Müəllim idarə paneli'
     if (route.startsWith('/student/lost-found')) return 'İtirilən və tapılan'
     if (route.startsWith('/student/team-finder')) return 'Komanda tapıcı'
+    if (route.startsWith('/student/chatbot')) return 'Chatbot'
     if (route.startsWith('/student')) return 'Tələbə idarə paneli'
     if (route === '/register') return 'Qeydiyyat'
     if (route === '/login') return 'Daxil ol'
@@ -604,7 +702,7 @@ function App() {
   const userRole = currentUser?.role ?? null
   const userRoleText = userRole ? roleLabel(userRole) : null
 
-  const adminCreateUser = (data: {
+  const adminCreateUser = async (data: {
     fullName: string
     email: string
     password: string
@@ -616,24 +714,22 @@ function App() {
       toast.error('Bütün sahələr doldurulmalıdır')
       return
     }
-    const exists = users.some((u) => u.email.toLowerCase() === normalizedEmail)
-    if (exists) {
-      toast.error('Bu email artıq mövcuddur')
-      return
+
+    try {
+      await adminUsersService.create({
+        fullName: data.fullName.trim(),
+        email: normalizedEmail,
+        password: data.password,
+        role: data.role,
+      })
+      toast.success('İstifadəçi yaradıldı')
+      await loadAdminUsers()
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
     }
-    const newUser: User = {
-      id: makeId('usr'),
-      fullName: data.fullName.trim(),
-      email: normalizedEmail,
-      password: data.password,
-      role: data.role,
-      createdAt: nowIso(),
-    }
-    setUsers((prev) => [newUser, ...prev])
-    toast.success('İstifadəçi yaradıldı')
   }
 
-  const adminUpdateUser = (
+  const adminUpdateUser = async (
     id: string,
     patch: { fullName: string; email: string; password?: string; role: Role },
   ) => {
@@ -643,37 +739,33 @@ function App() {
       toast.error('Ad və email mütləqdir')
       return
     }
-    const exists = users.some(
-      (u) => u.id !== id && u.email.toLowerCase() === normalizedEmail,
-    )
-    if (exists) {
-      toast.error('Bu email artıq mövcuddur')
-      return
+
+    try {
+      await adminUsersService.update(id, {
+        fullName: patch.fullName.trim(),
+        email: normalizedEmail,
+        role: patch.role,
+      })
+      toast.success('İstifadəçi yeniləndi')
+      await loadAdminUsers()
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
     }
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id
-          ? {
-              ...u,
-              fullName: patch.fullName.trim(),
-              email: normalizedEmail,
-              role: patch.role,
-              ...(patch.password ? { password: patch.password } : {}),
-            }
-          : u,
-      ),
-    )
-    toast.success('İstifadəçi yeniləndi')
   }
 
-  const adminDeleteUser = (id: string) => {
+  const adminDeleteUser = async (id: string) => {
     if (currentUser?.role !== 'admin') return
     if (id === currentUserId) {
       toast.error('Öz hesabını silə bilməzsən')
       return
     }
-    setUsers((prev) => prev.filter((u) => u.id !== id))
-    toast.success('İstifadəçi silindi')
+    try {
+      await adminUsersService.remove(id)
+      toast.success('İstifadəçi silindi')
+      await loadAdminUsers()
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
+    }
   }
 
   return (
@@ -773,7 +865,7 @@ function App() {
 
             {currentUser?.role === 'admin' && route === '/admin/users' ? (
               <AdminUsers
-                users={sortByCreatedAtDesc(users)}
+                users={adminUsersItems}
                 onCreate={adminCreateUser}
                 onUpdate={adminUpdateUser}
                 onDelete={adminDeleteUser}
@@ -795,6 +887,10 @@ function App() {
               <AdminStats stats={stats} />
             ) : null}
 
+            {currentUser?.role === 'admin' && route === '/admin/chatbot' ? (
+              <ChatbotPage variant="admin" />
+            ) : null}
+
             {currentUser?.role === 'teacher' && route === '/teacher' ? (
               <TeacherHome
                 approvedAnnouncements={approvedAnnouncements.slice(0, 5)}
@@ -808,6 +904,10 @@ function App() {
 
             {currentUser?.role === 'teacher' && route === '/teacher/events' ? (
               <TeacherEvents onCreate={createEvent} />
+            ) : null}
+
+            {currentUser?.role === 'teacher' && route === '/teacher/chatbot' ? (
+              <ChatbotPage variant="teacher" />
             ) : null}
 
             {currentUser?.role === 'student' && route === '/student' ? (
@@ -838,7 +938,15 @@ function App() {
                 posts={teamPostsSorted}
                 users={users}
                 onCreate={createTeamPost}
+                onUpdate={updateTeamPost}
+                onDelete={deleteTeamPost}
+                currentUserId={currentUser.id}
+                onSearch={(q) => loadTeamFinder(q)}
               />
+            ) : null}
+
+            {currentUser?.role === 'student' && route === '/student/chatbot' ? (
+              <ChatbotPage variant="student" />
             ) : null}
 
             {currentUser && route === '/login' ? null : null}

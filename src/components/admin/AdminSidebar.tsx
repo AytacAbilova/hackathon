@@ -13,6 +13,7 @@ export default function AdminSidebar(props: {
     { to: '/admin/users', label: 'İstifadəçi Siyahısı', icon: 'users' },
     { to: '/admin/announcements', label: 'Elanlar', icon: 'megaphone' },
     { to: '/admin/stats', label: 'Analitika', icon: 'chart' },
+    { to: '/admin/chatbot', label: 'Chatbot', icon: 'spark' },
   ]
 
   const initials = props.user.fullName.trim().slice(0, 1).toUpperCase()

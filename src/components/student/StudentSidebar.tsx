@@ -10,12 +10,13 @@ export default function StudentSidebar(props: {
 }) {
   const items: NavItem[] = [
     { to: '/student', label: 'Dashboard', icon: 'grid' },
-    { to: '/student/schedule', label: 'Schedule', icon: 'calendar', enabled: false },
-    { to: '/student/announcements', label: 'Announcements', icon: 'megaphone', enabled: false },
-    { to: '/student/events', label: 'Events', icon: 'spark', enabled: false },
-    { to: '/student/vacancies', label: 'Vacancies', icon: 'briefcase', enabled: false },
+    // { to: '/student/schedule', label: 'Schedule', icon: 'calendar', enabled: false },
+    // { to: '/student/announcements', label: 'Announcements', icon: 'megaphone', enabled: false },
+    // { to: '/student/events', label: 'Events', icon: 'spark', enabled: false },
+    // { to: '/student/vacancies', label: 'Vacancies', icon: 'briefcase', enabled: false },
     { to: '/student/team-finder', label: 'Team Finder', icon: 'users' },
     { to: '/student/lost-found', label: 'Lost & Found', icon: 'search' },
+    { to: '/student/chatbot', label: 'Chatbot', icon: 'spark' },
   ]
 
   const initials = props.user.fullName.trim().slice(0, 1).toUpperCase()

@@ -62,6 +62,23 @@ export function extractLostFoundLocation(description: string) {
   return m[2] ?? ''
 }
 
+export function extractTeamContact(description: string) {
+  const lines = description.split('\n')
+  for (const line of lines) {
+    const m = line.match(/^\s*(\u0259laq\u0259|elaqe|contact)\s*:\s*(.+)\s*$/i)
+    if (m?.[2]) return m[2].trim()
+  }
+  return ''
+}
+
+export function stripTeamContactLine(description: string) {
+  return description
+    .split('\n')
+    .filter((line) => !/^\s*(\u0259laq\u0259|elaqe|contact)\s*:/i.test(line))
+    .join('\n')
+    .trim()
+}
+
 export function canAccess(route: string, role: Role) {
   if (route.startsWith('/admin')) return role === 'admin'
   if (route.startsWith('/teacher')) return role === 'teacher'
