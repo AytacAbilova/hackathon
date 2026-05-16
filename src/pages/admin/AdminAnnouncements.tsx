@@ -33,28 +33,28 @@ export default function AdminAnnouncements(props: {
         <section className="adminCard adminCardPadded">
           <div className="adminCardHeader">
             <div>
-              <div className="adminCardTitle">Create New Announcement</div>
-              <div className="adminCardSubtitle">Draft, manage, and broadcast updates to the campus community.</div>
+              <div className="adminCardTitle">Yeni Elan Yarat</div>
+              <div className="adminCardSubtitle">Kampus ictimaiyyətinə yenilikləri hazırlayın, idarə edin və yayımlayın.</div>
             </div>
           </div>
 
           <div className="adminFormGrid">
             <div className="adminFormCol">
-              <InputField label="Announcement Title" value={title} onChange={setTitle} placeholder="e.g. Fall Exam Schedule Updated" />
-              <TextAreaField label="Content Body" value={content} onChange={setContent} placeholder="Enter the full details of your announcement here..." rows={6} />
+              <InputField label="Elanın Başlığı" value={title} onChange={setTitle} placeholder="məs. Payız İmtahan Cədvəli Yeniləndi" />
+              <TextAreaField label="Məzmun" value={content} onChange={setContent} placeholder="Elanınızın tam təfərrüatlarını buraya daxil edin..." rows={6} />
             </div>
             <div className="adminFormSide">
               <label className="field">
-                <span className="fieldLabel">Category</span>
+                <span className="fieldLabel">Kateqoriya</span>
                 <select className="select" value={category} onChange={(e) => setCategory(e.target.value as typeof category)}>
-                  <option value="Academic">Academic</option>
-                  <option value="Career">Career</option>
-                  <option value="General">General</option>
+                  <option value="Academic">Akademik</option>
+                  <option value="Career">Karyera</option>
+                  <option value="General">Ümumi</option>
                 </select>
               </label>
 
               <div className="adminHintBox">
-                Announcements can be sent to all students and faculty. Keep messages clear and actionable.
+                Elanlar bütün tələbə və müəllimlərə göndərilə bilər. Mesajları aydın və əməli saxlayın.
               </div>
 
               <button
@@ -67,7 +67,7 @@ export default function AdminAnnouncements(props: {
                 }}
                 disabled={!title.trim() || !content.trim()}
               >
-                Broadcast Announcement
+                Elanı Yayımla
               </button>
             </div>
           </div>
@@ -76,8 +76,8 @@ export default function AdminAnnouncements(props: {
         <section className="adminCard adminCardPadded">
           <div className="adminCardHeader adminCardHeaderRow">
             <div>
-              <div className="adminCardTitle">Active Announcements</div>
-              <div className="adminCardSubtitle">Review and manage current announcements.</div>
+              <div className="adminCardTitle">Aktiv Elanlar</div>
+              <div className="adminCardSubtitle">Mövcud elanları nəzərdən keçirin və idarə edin.</div>
             </div>
             <div className="adminTabs">
               <button
@@ -85,26 +85,26 @@ export default function AdminAnnouncements(props: {
                 className={tab === 'all' ? 'adminTab adminTabActive' : 'adminTab'}
                 onClick={() => setTab('all')}
               >
-                All
+                Hamısı
               </button>
               <button
                 type="button"
                 className={tab === 'approved' ? 'adminTab adminTabActive' : 'adminTab'}
                 onClick={() => setTab('approved')}
               >
-                Approved
+                Təsdiqlənmiş
               </button>
               <button
                 type="button"
                 className={tab === 'pending' ? 'adminTab adminTabActive' : 'adminTab'}
                 onClick={() => setTab('pending')}
               >
-                Pending
+                Gözləyən
               </button>
             </div>
           </div>
 
-          {list.length === 0 ? <div className="adminEmpty">No announcements</div> : null}
+          {list.length === 0 ? <div className="adminEmpty">Elan yoxdur</div> : null}
 
           <div className="adminAnnouncementList">
             {list.map((a) => {
@@ -114,7 +114,7 @@ export default function AdminAnnouncements(props: {
                   <div className="adminAnnouncementTop">
                     <div className="adminAnnouncementMeta">
                       <span className={isPending ? 'adminPill adminPillWarn' : 'adminPill adminPillOk'}>
-                        {isPending ? 'Pending' : 'Approved'}
+                        {isPending ? 'Gözləyən' : 'Təsdiqlənmiş'}
                       </span>
                       <span className="adminMeta">{formatDate(a.createdAt)}</span>
                       <span className="adminDot">•</span>
@@ -123,12 +123,12 @@ export default function AdminAnnouncements(props: {
                     <div className="adminAnnouncementActions">
                       {isPending ? (
                         <button type="button" className="adminMiniBtn" onClick={() => props.onApprove(a.id)}>
-                          Approve
+                          Təsdiqlə
                         </button>
                       ) : null}
                       {isPending ? (
                         <button type="button" className="adminMiniBtn adminMiniBtnDanger" onClick={() => props.onDelete(a.id)}>
-                          Delete
+                          Sil
                         </button>
                       ) : null}
                     </div>

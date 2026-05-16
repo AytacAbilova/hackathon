@@ -25,16 +25,15 @@ export default function AdminTopbar(props: {
             setQ(v)
             props.onSearch?.(v)
           }}
-          placeholder={props.placeholder ?? 'Search...'}
+          placeholder={props.placeholder ?? 'Axtar...'}
         />
       </div>
 
       <div className="adminTopbarRight">
-        <button type="button" className="adminIconBtn" aria-label="Notifications" />
-        <button type="button" className="adminIconBtn adminIconBtnGear" aria-label="Settings" />
-        <button type="button" className="adminIconBtn adminIconBtnUser" aria-label="Account" />
+        <button type="button" className="adminIconBtn" aria-label="Bildirişlər" />
+        <button type="button" className="adminIconBtn adminIconBtnGear" aria-label="Parametrlər" />
+        <button type="button" className="adminIconBtn adminIconBtnUser" aria-label="Hesab" />
       </div>
     </div>
   )
 }
-
