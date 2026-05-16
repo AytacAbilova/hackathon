@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Button from '../../components/ui/Button'
+import StudentTopbar from '../../components/student/StudentTopbar'
 import { InputField, TextAreaField } from '../../components/ui/Fields'
 import type { TeamPost, User } from '../../types/models'
 import { formatDate } from '../../lib/utils'
@@ -18,30 +18,26 @@ export default function StudentTeamFinder(props: {
     props.users.find((u) => u.id === userId)?.fullName ?? '—'
 
   return (
-    <div className="page">
-      <div className="pageHeader">
-        <div>
-          <h2 className="pageTitle">Team Finder</h2>
-          <p className="pageSubtitle">Skill-lər mütləqdir, elanlar tarixə görə sıralanır</p>
-        </div>
-      </div>
+    <div className="studentPage">
+      <StudentTopbar title="Team Finder" placeholder="Komandalardan axtar..." />
 
-      <div className="grid grid2">
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Yeni komanda elanı</div>
-              <div className="cardSubtitle">Skill-ləri vergül ilə ayırın</div>
-            </div>
+      <div className="studentTeamLayout">
+        <section className="studentFormCard">
+          <div className="studentFormHeader">
+            <div className="studentFormTitle">Yeni komanda elanı</div>
           </div>
 
-          <div className="stack">
-            <InputField label="Başlıq" value={title} onChange={setTitle} placeholder="Məs: Hackathon üçün UI/UX axtarırıq" />
-            <TextAreaField label="Təsvir" value={description} onChange={setDescription} placeholder="Nə üzərində işləyirsiniz, neçə nəfər lazımdır və s." />
-            <InputField label="Skills (mütləq)" value={skillsRaw} onChange={setSkillsRaw} placeholder="React, Node.js, Figma" />
-            <InputField label="Əlaqə (mütləq)" value={contact} onChange={setContact} placeholder="Telegram / Email" />
-            <Button
-              variant="primary"
+          <div className="studentFormBody">
+            <div className="studentFormFields">
+              <InputField label="Başlıq" value={title} onChange={setTitle} placeholder="Məs: Mobil tətbiq üçün dizayner" />
+              <TextAreaField label="Təsvir" value={description} onChange={setDescription} placeholder="Layihə haqqında qısa məlumat verin..." />
+              <InputField label="Bacarıqlar (Skills)" value={skillsRaw} onChange={setSkillsRaw} placeholder="UI/UX, Figma, React" />
+              <InputField label="Əlaqə" value={contact} onChange={setContact} placeholder="Telegram, Email və ya WhatsApp" />
+            </div>
+
+            <button
+              type="button"
+              className="studentPrimaryBtn"
               onClick={() => {
                 props.onCreate(title, description, skillsRaw, contact)
                 setTitle('')
@@ -51,47 +47,63 @@ export default function StudentTeamFinder(props: {
               }}
               disabled={!title.trim() || !description.trim() || !skillsRaw.trim() || !contact.trim()}
             >
-              Elanı yerləşdir
-            </Button>
+              Elanı paylaş
+            </button>
           </div>
-        </div>
+        </section>
 
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Komanda elanları</div>
-              <div className="cardSubtitle">Ən yenilər yuxarıda</div>
+        <section className="studentTeamFeed">
+          <div className="studentSectionHeader">
+            <div className="studentSectionTitle">Komanda elanları</div>
+            <div className="studentTeamFilters">
+              <button type="button" className="studentFilterBtn">
+                Filter
+              </button>
+              <button type="button" className="studentFilterBtn studentFilterBtnActive">
+                Ən yeni
+              </button>
             </div>
-            <span className="chip">{props.posts.length}</span>
           </div>
 
-          <div className="list">
-            {props.posts.length === 0 ? <div className="empty">Elan yoxdur</div> : null}
+          {props.posts.length === 0 ? <div className="studentEmpty">Elan yoxdur</div> : null}
+
+          <div className="studentTeamStack">
             {props.posts.map((p) => (
-              <div key={p.id} className="listItem">
-                <div className="listTop">
-                  <div className="listTitle">{p.title}</div>
-                  <span className="muted">{formatDate(p.createdAt)}</span>
+              <article key={p.id} className="studentTeamCard">
+                <div className="studentTeamCardTop">
+                  <div className="studentTeamAuthor">
+                    <div className="studentAvatarMini" aria-hidden="true" />
+                    <div className="studentAuthorMeta">
+                      <div className="studentAuthorName">{resolveName(p.createdByUserId)}</div>
+                      <div className="studentMeta">{formatDate(p.createdAt)}</div>
+                    </div>
+                  </div>
+                  <button type="button" className="studentApplyBtn">
+                    Müraciət et
+                  </button>
                 </div>
-                <div className="listBody">{p.description}</div>
-                <div className="skillsRow">
+
+                <div className="studentTeamTitle">{p.title}</div>
+                <div className="studentTeamDesc">{p.description}</div>
+
+                <div className="studentTags">
                   {p.skills.map((s) => (
-                    <span key={s} className="skill">
+                    <span key={s} className="studentTag">
                       {s}
                     </span>
                   ))}
                 </div>
-                <div className="listMeta">
-                  <span className="muted">{resolveName(p.createdByUserId)}</span>
+
+                <div className="studentTeamBottom">
+                  <div className="studentMeta mono">{p.contact}</div>
+                  <button type="button" className="studentMsgBtn">
+                    Mesaj yaz
+                  </button>
                 </div>
-                <div className="contactRow">
-                  <span className="contactLabel">Əlaqə:</span>
-                  <span className="mono">{p.contact}</span>
-                </div>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   )
