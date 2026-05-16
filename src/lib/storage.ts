@@ -5,6 +5,9 @@ export const storageKeys = {
   events: 'academy.events.v1',
   lostFound: 'academy.lostFound.v1',
   teamPosts: 'academy.teamPosts.v1',
+  accessToken: 'academy.auth.accessToken.v1',
+  refreshToken: 'academy.auth.refreshToken.v1',
+  expiresAt: 'academy.auth.expiresAt.v1',
 } as const
 
 export function readJson<T>(key: string, fallback: T): T {

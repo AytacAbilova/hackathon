@@ -20,6 +20,9 @@ import AdminSidebar from './components/admin/AdminSidebar'
 import AdminTopbar from './components/admin/AdminTopbar'
 import StudentSidebar from './components/student/StudentSidebar'
 import useHashRoute from './hooks/useHashRoute'
+import { getApiErrorMessage, getStoredTokens } from './lib/api'
+import { getSessionFromAccessToken } from './lib/jwt'
+import * as authService from './services/auth'
 import type {
   Announcement,
   EventItem,
@@ -48,7 +51,25 @@ runSeedOnceInBrowser()
 function App() {
   const { route, navigate } = useHashRoute()
 
-  const [users, setUsers] = useState<User[]>(() => readJson<User[]>(storageKeys.users, []))
+  const [users, setUsers] = useState<User[]>(() => {
+    const baseUsers = readJson<User[]>(storageKeys.users, [])
+    const tokens = getStoredTokens()
+    const session = tokens ? getSessionFromAccessToken(tokens.accessToken) : null
+    if (!session) return baseUsers
+
+    const exists = baseUsers.some((u) => u.id === session.userId)
+    if (exists) return baseUsers
+
+    const localUser: User = {
+      id: session.userId,
+      fullName: session.fullName || '—',
+      email: session.email || '—',
+      password: '',
+      role: session.role,
+      createdAt: nowIso(),
+    }
+    return [localUser, ...baseUsers]
+  })
   const [announcements, setAnnouncements] = useState<Announcement[]>(() =>
     readJson<Announcement[]>(storageKeys.announcements, []),
   )
@@ -58,9 +79,15 @@ function App() {
   )
   const [teamPosts, setTeamPosts] = useState<TeamPost[]>(() => readJson<TeamPost[]>(storageKeys.teamPosts, []))
 
-  const [currentUserId, setCurrentUserId] = useState<string | null>(() =>
-    localStorage.getItem(storageKeys.currentUserId),
-  )
+  const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
+    const stored = localStorage.getItem(storageKeys.currentUserId)
+    if (stored) return stored
+    const tokens = getStoredTokens()
+    const session = tokens ? getSessionFromAccessToken(tokens.accessToken) : null
+    if (!session) return null
+    localStorage.setItem(storageKeys.currentUserId, session.userId)
+    return session.userId
+  })
 
   const currentUser = useMemo(() => {
     if (!currentUserId) return null
@@ -120,51 +147,84 @@ function App() {
     }
   }, [currentUser, navigate, route])
 
+  useEffect(() => {
+    const handleLogout = () => {
+      localStorage.removeItem(storageKeys.currentUserId)
+      setCurrentUserId(null)
+      toast.success('Çıxış edildi')
+      navigate('/login')
+    }
+    window.addEventListener('auth:logout', handleLogout)
+    return () => {
+      window.removeEventListener('auth:logout', handleLogout)
+    }
+  }, [navigate])
+
   const logout = () => {
-    localStorage.removeItem(storageKeys.currentUserId)
-    setCurrentUserId(null)
-    toast.success('Çıxış edildi')
-    navigate('/login')
+    void authService.revoke()
   }
 
-  const login = (email: string, password: string) => {
-    const found = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-    )
-    if (!found) {
-      toast.error('Email və ya şifrə yanlışdır')
-      return
+  const login = async (email: string, password: string) => {
+    try {
+      const auth = await authService.login({ email, password })
+      const session = getSessionFromAccessToken(auth.accessToken)
+      const userId = session?.userId ?? String(auth.userId)
+      const role = session?.role ?? 'student'
+
+      const exists = users.some((u) => u.id === userId)
+      if (!exists) {
+        const localUser: User = {
+          id: userId,
+          fullName: auth.fullName,
+          email: auth.email,
+          password: '',
+          role,
+          createdAt: nowIso(),
+        }
+        setUsers((prev) => [localUser, ...prev])
+      }
+
+      localStorage.setItem(storageKeys.currentUserId, userId)
+      setCurrentUserId(userId)
+      toast.success(`Xoş gəldin, ${auth.fullName}`)
+      navigate(getRoleHome(role))
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
     }
-    localStorage.setItem(storageKeys.currentUserId, found.id)
-    setCurrentUserId(found.id)
-    toast.success(`Xoş gəldin, ${found.fullName}`)
-    navigate(getRoleHome(found.role))
   }
 
-  const registerStudent = (fullName: string, email: string, password: string) => {
+  const registerStudent = async (fullName: string, email: string, password: string) => {
     const normalizedEmail = email.trim().toLowerCase()
-    if (!fullName.trim() || !normalizedEmail || !password) {
-      toast.error('Bütün sahələr doldurulmalıdır')
-      return
+    try {
+      const auth = await authService.register({
+        fullName: fullName.trim(),
+        email: normalizedEmail,
+        password,
+      })
+      const session = getSessionFromAccessToken(auth.accessToken)
+      const userId = session?.userId ?? String(auth.userId)
+      const role = session?.role ?? 'student'
+
+      const exists = users.some((u) => u.id === userId)
+      if (!exists) {
+        const localUser: User = {
+          id: userId,
+          fullName: auth.fullName,
+          email: auth.email,
+          password: '',
+          role,
+          createdAt: nowIso(),
+        }
+        setUsers((prev) => [localUser, ...prev])
+      }
+
+      localStorage.setItem(storageKeys.currentUserId, userId)
+      setCurrentUserId(userId)
+      toast.success('Qeydiyyat uğurla tamamlandı')
+      navigate(getRoleHome(role))
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
     }
-    const exists = users.some((u) => u.email.toLowerCase() === normalizedEmail)
-    if (exists) {
-      toast.error('Bu email artıq qeydiyyatdan keçib')
-      return
-    }
-    const newUser: User = {
-      id: makeId('usr'),
-      fullName: fullName.trim(),
-      email: normalizedEmail,
-      password,
-      role: 'student',
-      createdAt: nowIso(),
-    }
-    setUsers((prev) => [newUser, ...prev])
-    localStorage.setItem(storageKeys.currentUserId, newUser.id)
-    setCurrentUserId(newUser.id)
-    toast.success('Qeydiyyat uğurla tamamlandı')
-    navigate(getRoleHome(newUser.role))
   }
 
   const createAnnouncement = (title: string, content: string) => {

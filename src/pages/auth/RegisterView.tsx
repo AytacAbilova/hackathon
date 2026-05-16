@@ -4,12 +4,13 @@ import Button from '../../components/ui/Button'
 import { InputField } from '../../components/ui/Fields'
 
 export default function RegisterView(props: {
-  onRegister: (fullName: string, email: string, password: string) => void
+  onRegister: (fullName: string, email: string, password: string) => Promise<void>
   onGoLogin: () => void
 }) {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
   return (
     <AuthCard
@@ -24,7 +25,19 @@ export default function RegisterView(props: {
         </div>
       }
     >
-      <div className="stack">
+      <form
+        className="stack"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          if (loading) return
+          setLoading(true)
+          try {
+            await props.onRegister(fullName, email, password)
+          } finally {
+            setLoading(false)
+          }
+        }}
+      >
         <InputField
           label="Ad Soyad"
           value={fullName}
@@ -46,16 +59,16 @@ export default function RegisterView(props: {
           placeholder="Minimum 6 simvol"
         />
         <Button
+          type="submit"
           variant="primary"
-          onClick={() => props.onRegister(fullName, email, password)}
-          disabled={!fullName.trim() || !email.trim() || !password}
+          disabled={!fullName.trim() || !email.trim() || !password || loading}
         >
-          Qeydiyyat et
+          {loading ? 'Göndərilir...' : 'Qeydiyyat et'}
         </Button>
         <div className="hint">
           Rol avtomatik olaraq <span className="pill">Tələbə</span> təyin olunur.
         </div>
-      </div>
+      </form>
     </AuthCard>
   )
 }

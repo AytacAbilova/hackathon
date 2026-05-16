@@ -4,11 +4,12 @@ import Button from '../../components/ui/Button'
 import { InputField } from '../../components/ui/Fields'
 
 export default function LoginView(props: {
-  onLogin: (email: string, password: string) => void
+  onLogin: (email: string, password: string) => Promise<void>
   onGoRegister: () => void
 }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
   return (
     <AuthCard
@@ -23,7 +24,19 @@ export default function LoginView(props: {
         </div>
       }
     >
-      <div className="stack">
+      <form
+        className="stack"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          if (loading) return
+          setLoading(true)
+          try {
+            await props.onLogin(email.trim(), password)
+          } finally {
+            setLoading(false)
+          }
+        }}
+      >
         <InputField
           label="Email"
           type="email"
@@ -40,12 +53,20 @@ export default function LoginView(props: {
         />
         <Button
           variant="primary"
-          onClick={() => props.onLogin(email.trim(), password)}
-          disabled={!email.trim() || !password}
+          onClick={async () => {
+            if (loading) return
+            setLoading(true)
+            try {
+              await props.onLogin(email.trim(), password)
+            } finally {
+              setLoading(false)
+            }
+          }}
+          disabled={!email.trim() || !password || loading}
         >
-          Daxil ol
+          {loading ? 'Yoxlanır...' : 'Daxil ol'}
         </Button>
-      </div>
+      </form>
 
       <div className="demoBox">
         <div className="demoTitle">Demo hesablar</div>
