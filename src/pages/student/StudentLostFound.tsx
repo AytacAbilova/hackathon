@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Button from '../../components/ui/Button'
+import StudentTopbar from '../../components/student/StudentTopbar'
 import { InputField, TextAreaField } from '../../components/ui/Fields'
 import type { LostFoundPost, LostFoundType, User } from '../../types/models'
 import { formatDate } from '../../lib/utils'
@@ -25,37 +25,46 @@ export default function StudentLostFound(props: {
     props.users.find((u) => u.id === userId)?.fullName ?? '—'
 
   return (
-    <div className="page">
-      <div className="pageHeader">
-        <div>
-          <h2 className="pageTitle">Lost & Found</h2>
-          <p className="pageSubtitle">Əlaqə məlumatı mütləqdir, paylaşımlar tarixə görə sıralanır</p>
-        </div>
-      </div>
+    <div className="studentPage">
+      <StudentTopbar title="İtmiş Əşyalar" placeholder="Əşya və ya yer axtarın..." />
 
-      <div className="grid grid2">
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Yeni paylaşım</div>
-              <div className="cardSubtitle">Lost / Found</div>
-            </div>
+      <div className="studentLfLayout">
+        <section className="studentFormCard">
+          <div className="studentFormHeader">
+            <div className="studentFormTitle">Yeni paylaşım</div>
           </div>
 
-          <div className="stack">
-            <label className="field">
-              <span className="fieldLabel">Tip</span>
-              <select className="select" value={type} onChange={(e) => setType(e.target.value as LostFoundType)}>
-                <option value="lost">Lost</option>
-                <option value="found">Found</option>
-              </select>
+          <div className="studentFormBody">
+            <label className="studentField">
+              <span className="studentFieldLabel">Tip</span>
+              <div className="studentToggle">
+                <button
+                  type="button"
+                  className={type === 'lost' ? 'studentToggleBtn studentToggleBtnActive' : 'studentToggleBtn'}
+                  onClick={() => setType('lost')}
+                >
+                  İtmiş
+                </button>
+                <button
+                  type="button"
+                  className={type === 'found' ? 'studentToggleBtn studentToggleBtnActive' : 'studentToggleBtn'}
+                  onClick={() => setType('found')}
+                >
+                  Tapılmış
+                </button>
+              </div>
             </label>
-            <InputField label="Əşya" value={itemTitle} onChange={setItemTitle} placeholder="Məs: Qara qulaqcıq" />
-            <InputField label="Yer" value={location} onChange={setLocation} placeholder="Məs: 2-ci mərtəbə" />
-            <TextAreaField label="Təsvir" value={description} onChange={setDescription} placeholder="Əlavə detal..." />
-            <InputField label="Əlaqə (mütləq)" value={contact} onChange={setContact} placeholder="Telefon / Telegram / Email" />
-            <Button
-              variant="primary"
+
+            <div className="studentFormFields">
+              <InputField label="Əşya adı" value={itemTitle} onChange={setItemTitle} placeholder="Məs: MacBook Pro, Tələbə kartı" />
+              <InputField label="Yer" value={location} onChange={setLocation} placeholder="Məs: Kitabxana, 302-ci otaq..." />
+              <TextAreaField label="Təsvir" value={description} onChange={setDescription} placeholder="Rəng, vəziyyəti və s. haqqında qısa məlumat..." />
+              <InputField label="Əlaqə nömrəsi / Telegram" value={contact} onChange={setContact} placeholder="+994 50 000 00 00" />
+            </div>
+
+            <button
+              type="button"
+              className="studentPrimaryBtn"
               onClick={() => {
                 props.onCreate(type, itemTitle, location, description, contact)
                 setItemTitle('')
@@ -66,45 +75,61 @@ export default function StudentLostFound(props: {
               disabled={!itemTitle.trim() || !location.trim() || !contact.trim()}
             >
               Paylaş
-            </Button>
+            </button>
           </div>
-        </div>
+        </section>
 
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Paylaşımlar</div>
-              <div className="cardSubtitle">Ən yenilər yuxarıda</div>
+        <section className="studentLfFeed">
+          <div className="studentSectionHeader">
+            <div className="studentSectionTitle">Son paylaşımlar</div>
+            <div className="studentTabs">
+              <button type="button" className="studentTab studentTabActive">
+                Hamısı
+              </button>
+              <button type="button" className="studentTab">
+                İtmişlər
+              </button>
+              <button type="button" className="studentTab">
+                Tapılanlar
+              </button>
             </div>
-            <span className="chip">{props.posts.length}</span>
           </div>
-          <div className="list">
-            {props.posts.length === 0 ? <div className="empty">Paylaşım yoxdur</div> : null}
+
+          {props.posts.length === 0 ? <div className="studentEmpty">Paylaşım yoxdur</div> : null}
+
+          <div className="studentLfGrid">
             {props.posts.map((p) => (
-              <div key={p.id} className="listItem">
-                <div className="listTop">
-                  <div className="listTitle">
-                    <span className={p.type === 'lost' ? 'pill pillWarn' : 'pill pillOk'}>
-                      {p.type === 'lost' ? 'Lost' : 'Found'}
-                    </span>{' '}
-                    {p.itemTitle}
+              <article key={p.id} className="studentMediaCard">
+                <div className="studentMediaThumb" aria-hidden="true">
+                  <span className={p.type === 'lost' ? 'studentPill studentPillLost' : 'studentPill studentPillFound'}>
+                    {p.type === 'lost' ? 'İtmiş' : 'Tapılmış'}
+                  </span>
+                </div>
+                <div className="studentMediaBody">
+                  <div className="studentMediaTitle">{p.itemTitle}</div>
+                  <div className="studentMediaMeta">
+                    <span className="studentMeta">{p.location}</span>
+                    <span className="studentDot">•</span>
+                    <span className="studentMeta">{formatDate(p.createdAt)}</span>
                   </div>
-                  <span className="muted">{formatDate(p.createdAt)}</span>
+                  <div className="studentMediaText">{p.description || '—'}</div>
+                  <div className="studentMediaActions">
+                    <button type="button" className="studentSecondaryBtn">
+                      Sahibi ilə əlaqə
+                    </button>
+                    <button type="button" className="studentTertiaryBtn">
+                      Detallara bax
+                    </button>
+                  </div>
+                  <div className="studentMediaFooter">
+                    <span className="studentMeta">{resolveName(p.createdByUserId)}</span>
+                    <span className="studentMeta mono">{p.contact}</span>
+                  </div>
                 </div>
-                <div className="listBody">{p.description || '—'}</div>
-                <div className="listMeta">
-                  <span className="muted">{p.location}</span>
-                  <span className="dot">•</span>
-                  <span className="muted">{resolveName(p.createdByUserId)}</span>
-                </div>
-                <div className="contactRow">
-                  <span className="contactLabel">Əlaqə:</span>
-                  <span className="mono">{p.contact}</span>
-                </div>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   )

@@ -16,6 +16,7 @@ import TeacherEvents from './pages/teacher/TeacherEvents'
 import StudentHome from './pages/student/StudentHome'
 import StudentLostFound from './pages/student/StudentLostFound'
 import StudentTeamFinder from './pages/student/StudentTeamFinder'
+import StudentSidebar from './components/student/StudentSidebar'
 import useHashRoute from './hooks/useHashRoute'
 import type {
   Announcement,
@@ -103,6 +104,17 @@ function App() {
 
     if (!canAccess(route, currentUser.role)) {
       navigate(getRoleHome(currentUser.role))
+      return
+    }
+
+    if (currentUser.role === 'student') {
+      const ok =
+        route === '/student' ||
+        route === '/student/lost-found' ||
+        route === '/student/team-finder'
+      if (route.startsWith('/student') && !ok) {
+        navigate('/student')
+      }
     }
   }, [currentUser, navigate, route])
 
@@ -449,20 +461,22 @@ function App() {
 
   return (
     <>
-      <div className="appShell">
-        <Header
-          title={title}
-          userName={userName}
-          userRole={userRoleText}
-          onLogoClick={() => {
-            if (!currentUser) navigate('/')
-            else navigate(getRoleHome(currentUser.role))
-          }}
-          onLogout={currentUser ? logout : undefined}
-        />
+      <div className={currentUser?.role === 'student' ? 'appShell studentShell' : 'appShell'}>
+        {currentUser?.role !== 'student' ? (
+          <Header
+            title={title}
+            userName={userName}
+            userRole={userRoleText}
+            onLogoClick={() => {
+              if (!currentUser) navigate('/')
+              else navigate(getRoleHome(currentUser.role))
+            }}
+            onLogout={currentUser ? logout : undefined}
+          />
+        ) : null}
 
         <div className={currentUser ? 'appBody' : 'appBody appBodyPublic'}>
-          {currentUser ? (
+          {currentUser && currentUser.role !== 'student' ? (
             <aside className="sidebar" aria-label="Navigation">
               <div className="sidebarSection">
                 <div className="sidebarRole">
@@ -490,6 +504,10 @@ function App() {
                 ))}
               </nav>
             </aside>
+          ) : null}
+
+          {currentUser?.role === 'student' ? (
+            <StudentSidebar user={currentUser} route={route} onNavigate={navigate} onLogout={logout} />
           ) : null}
 
           <main className="content">
@@ -586,7 +604,7 @@ function App() {
           </main>
         </div>
 
-        <Footer />
+        {currentUser?.role !== 'student' ? <Footer /> : null}
       </div>
 
       <ToastContainer position="bottom-right" autoClose={2500} theme="colored" />

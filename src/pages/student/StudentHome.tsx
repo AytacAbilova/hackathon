@@ -1,4 +1,4 @@
-import Button from '../../components/ui/Button'
+import StudentTopbar from '../../components/student/StudentTopbar'
 import type { Announcement, EventItem, LostFoundPost, TeamPost } from '../../types/models'
 import { formatDate } from '../../lib/utils'
 
@@ -11,136 +11,150 @@ export default function StudentHome(props: {
   onGoTeamFinder: () => void
 }) {
   return (
-    <div className="page">
-      <div className="pageHeader">
-        <div>
-          <h2 className="pageTitle">Dashboard</h2>
-          <p className="pageSubtitle">Elanlar, eventlər və tələbə bölmələri</p>
-        </div>
-        <div className="actionsRow">
-          <Button variant="secondary" onClick={props.onGoLostFound}>
-            Lost & Found
-          </Button>
-          <Button variant="secondary" onClick={props.onGoTeamFinder}>
-            Team Finder
-          </Button>
-        </div>
-      </div>
+    <div className="studentPage">
+      <StudentTopbar title="Dashboard" placeholder="Axtarış..." />
 
-      <div className="grid grid2">
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Elanlar</div>
-              <div className="cardSubtitle">Tarixə görə sıralanır</div>
+      <section className="studentHeroCard">
+        <div className="studentHeroLeft">
+          <div className="studentHeroTitle">Xoş gəldin!</div>
+          <div className="studentHeroSub">
+            Bugünkü dərslərin və elanların buradadır. Akademik tərəqqin hər zaman nəzarətdə olsun.
+          </div>
+
+          <div className="studentHeroStats">
+            <div className="studentMiniStat">
+              <div className="studentMiniStatLabel">GPA</div>
+              <div className="studentMiniStatValue">3.85</div>
+            </div>
+            <div className="studentMiniStat">
+              <div className="studentMiniStatLabel">Davamiyyət</div>
+              <div className="studentMiniStatValue">94%</div>
             </div>
           </div>
-          <div className="list">
-            {props.announcements.length === 0 ? <div className="empty">Elan yoxdur</div> : null}
+        </div>
+        <div className="studentHeroRight">
+          <div className="studentHeroVisual" aria-hidden="true" />
+        </div>
+      </section>
+
+      <div className="studentGrid2">
+        <section className="studentSectionCard">
+          <div className="studentSectionHeader">
+            <div className="studentSectionTitle">Elanlar</div>
+            <button type="button" className="studentLinkBtn">
+              Hamısına bax
+            </button>
+          </div>
+          <div className="studentStack">
+            {props.announcements.length === 0 ? (
+              <div className="studentEmpty">Elan yoxdur</div>
+            ) : null}
             {props.announcements.map((a) => (
-              <div key={a.id} className="listItem">
-                <div className="listTop">
-                  <div className="listTitle">{a.title}</div>
-                  <span className="pill pillOk">Approved</span>
+              <article key={a.id} className="studentListCard">
+                <div className="studentListCardTop">
+                  <span className="studentPill studentPillApproved">Approved</span>
+                  <span className="studentMeta">{formatDate(a.createdAt)}</span>
                 </div>
-                <div className="listBody">{a.content}</div>
-                <div className="listMeta">
-                  <span className="muted">{formatDate(a.createdAt)}</span>
-                </div>
-              </div>
+                <div className="studentListCardTitle">{a.title}</div>
+                <div className="studentListCardText">{a.content}</div>
+              </article>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Eventlər</div>
-              <div className="cardSubtitle">Tarixə görə sıralanır</div>
-            </div>
+        <section className="studentSectionCard">
+          <div className="studentSectionHeader">
+            <div className="studentSectionTitle">Eventlər</div>
+            <button type="button" className="studentLinkBtn">
+              Təqvim
+            </button>
           </div>
-          <div className="list">
-            {props.events.length === 0 ? <div className="empty">Event yoxdur</div> : null}
+          <div className="studentStack">
+            {props.events.length === 0 ? <div className="studentEmpty">Event yoxdur</div> : null}
             {props.events.map((e) => (
-              <div key={e.id} className="listItem">
-                <div className="listTop">
-                  <div className="listTitle">{e.title}</div>
-                  <span className="pill pillInfo">{e.location}</span>
+              <article key={e.id} className="studentEventCard">
+                <div className="studentEventThumb" aria-hidden="true" />
+                <div className="studentEventBody">
+                  <div className="studentEventTop">
+                    <div className="studentEventTitle">{e.title}</div>
+                    <span className="studentPill studentPillInfo">{e.location}</span>
+                  </div>
+                  <div className="studentEventMeta">
+                    <span>{formatDate(e.startsAt)}</span>
+                    <span className="studentDot">•</span>
+                    <span>{e.description || '—'}</span>
+                  </div>
                 </div>
-                <div className="listBody">{e.description || '—'}</div>
-                <div className="listMeta">
-                  <span className="muted">Başlayır: {formatDate(e.startsAt)}</span>
-                  <span className="dot">•</span>
-                  <span className="muted">Yaradılıb: {formatDate(e.createdAt)}</span>
-                </div>
-              </div>
+              </article>
             ))}
           </div>
-        </div>
+        </section>
       </div>
 
-      <div className="grid grid2">
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Lost & Found</div>
-              <div className="cardSubtitle">Son paylaşımlar</div>
-            </div>
-            <Button variant="secondary" onClick={props.onGoLostFound}>
-              Aç
-            </Button>
-          </div>
-          <div className="list">
-            {props.lostFound.length === 0 ? <div className="empty">Paylaşım yoxdur</div> : null}
-            {props.lostFound.map((p) => (
-              <div key={p.id} className="listItem compact">
-                <div className="listTop">
-                  <div className="listTitle">
-                    <span className={p.type === 'lost' ? 'pill pillWarn' : 'pill pillOk'}>
-                      {p.type === 'lost' ? 'Lost' : 'Found'}
-                    </span>{' '}
-                    {p.itemTitle}
-                  </div>
-                  <span className="muted">{formatDate(p.createdAt)}</span>
-                </div>
-                <div className="listMeta">
-                  <span className="muted">{p.location}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="studentQuickGrid">
+        <button type="button" className="studentQuickCard" onClick={props.onGoLostFound}>
+          <div className="studentQuickIcon studentQuickIconSearch" aria-hidden="true" />
+          <div className="studentQuickTitle">Lost &amp; Found</div>
+          <div className="studentQuickDesc">İtmiş əşyaları axtar və tap</div>
+        </button>
+        <button type="button" className="studentQuickCard" onClick={props.onGoTeamFinder}>
+          <div className="studentQuickIcon studentQuickIconUsers" aria-hidden="true" />
+          <div className="studentQuickTitle">Team Finder</div>
+          <div className="studentQuickDesc">Layihə üçün komanda yığ</div>
+        </button>
+      </div>
 
-        <div className="card">
-          <div className="cardHeader">
-            <div>
-              <div className="cardTitle">Team Finder</div>
-              <div className="cardSubtitle">Son komanda elanları</div>
-            </div>
-            <Button variant="secondary" onClick={props.onGoTeamFinder}>
-              Aç
-            </Button>
+      <div className="studentGrid2">
+        <section className="studentSectionCard">
+          <div className="studentSectionHeader">
+            <div className="studentSectionTitle">Lost &amp; Found</div>
+            <button type="button" className="studentLinkBtn" onClick={props.onGoLostFound}>
+              Hamısı
+            </button>
           </div>
-          <div className="list">
-            {props.teamPosts.length === 0 ? <div className="empty">Komanda elanı yoxdur</div> : null}
-            {props.teamPosts.map((p) => (
-              <div key={p.id} className="listItem compact">
-                <div className="listTop">
-                  <div className="listTitle">{p.title}</div>
-                  <span className="muted">{formatDate(p.createdAt)}</span>
+          <div className="studentStack">
+            {props.lostFound.length === 0 ? <div className="studentEmpty">Paylaşım yoxdur</div> : null}
+            {props.lostFound.map((p) => (
+              <div key={p.id} className="studentRowCard">
+                <div className="studentRowLeft">
+                  <span className={p.type === 'lost' ? 'studentPill studentPillLost' : 'studentPill studentPillFound'}>
+                    {p.type === 'lost' ? 'İtmiş' : 'Tapılmış'}
+                  </span>
+                  <div className="studentRowTitle">{p.itemTitle}</div>
+                  <div className="studentMeta">{p.location}</div>
                 </div>
-                <div className="skillsRow">
-                  {p.skills.slice(0, 4).map((s) => (
-                    <span key={s} className="skill">
-                      {s}
-                    </span>
-                  ))}
-                  {p.skills.length > 4 ? <span className="muted">+{p.skills.length - 4}</span> : null}
-                </div>
+                <div className="studentMeta">{formatDate(p.createdAt)}</div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
+
+        <section className="studentSectionCard">
+          <div className="studentSectionHeader">
+            <div className="studentSectionTitle">Team Finder</div>
+            <button type="button" className="studentLinkBtn" onClick={props.onGoTeamFinder}>
+              Hamısı
+            </button>
+          </div>
+          <div className="studentStack">
+            {props.teamPosts.length === 0 ? <div className="studentEmpty">Komanda elanı yoxdur</div> : null}
+            {props.teamPosts.map((p) => (
+              <div key={p.id} className="studentRowCard">
+                <div className="studentRowLeft">
+                  <div className="studentRowTitle">{p.title}</div>
+                  <div className="studentTags">
+                    {p.skills.slice(0, 4).map((s) => (
+                      <span key={s} className="studentTag">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="studentMeta">{formatDate(p.createdAt)}</div>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   )
