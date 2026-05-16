@@ -16,20 +16,20 @@ export default function AdminHome(props: {
     <div className="adminPage">
       <div className="adminHero">
         <div>
-          <div className="adminWelcome">Welcome, Platform Admin.</div>
+          <div className="adminWelcome">Xoş gəldiniz, Platform Administratoru.</div>
           <div className="adminWelcomeSub">
-            Here is an overview of the academy’s real-time performance and system health.
+            Akademiyanın real vaxt performansı və sistem sağlamlığına ümumi baxış.
           </div>
         </div>
         <div className="adminHeroActions">
           <button type="button" className="adminCta" onClick={props.onGoUsers}>
-            User List
+            İstifadəçi Siyahısı
           </button>
           <button type="button" className="adminCta adminCtaGhost" onClick={props.onGoAnnouncements}>
-            Announcements {props.pendingCount > 0 ? <span className="adminBadge">{props.pendingCount}</span> : null}
+            Elanlar {props.pendingCount > 0 ? <span className="adminBadge">{props.pendingCount}</span> : null}
           </button>
           <button type="button" className="adminCta adminCtaGhost" onClick={props.onGoStats}>
-            Analytics
+            Analitika
           </button>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function AdminHome(props: {
       <div className="adminStatsGrid">
         <button type="button" className="adminStatCard" onClick={props.onGoUsers}>
           <div className="adminStatTop">
-            <span className="adminStatLabel">Total Users</span>
+            <span className="adminStatLabel">Ümumi İstifadəçilər</span>
             <span className="adminStatDelta">+12%</span>
           </div>
           <div className="adminStatValue">{totalUsers}</div>
@@ -45,7 +45,7 @@ export default function AdminHome(props: {
 
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Approved Announcements</span>
+            <span className="adminStatLabel">Təsdiqlənmiş Elanlar</span>
             <span className="adminStatDot adminDotOk" />
           </div>
           <div className="adminStatValue">{approved}</div>
@@ -53,7 +53,7 @@ export default function AdminHome(props: {
 
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Pending Announcements</span>
+            <span className="adminStatLabel">Gözləyən Elanlar</span>
             <span className="adminStatDot adminDotWarn" />
           </div>
           <div className="adminStatValue">{pending}</div>
@@ -61,7 +61,7 @@ export default function AdminHome(props: {
 
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Active Events</span>
+            <span className="adminStatLabel">Aktiv Tədbirlər</span>
             <span className="adminStatDot adminDotInfo" />
           </div>
           <div className="adminStatValue">{activeEvents}</div>
@@ -71,30 +71,30 @@ export default function AdminHome(props: {
       <div className="adminMainGrid">
         <section className="adminWideCard">
           <div className="adminWideCardHeader">
-            <div className="adminWideCardTitle">Quick Look: System Health</div>
+            <div className="adminWideCardTitle">Sürətli Baxış: Sistem Sağlamlığı</div>
             <button type="button" className="adminLinkBtn">
-              Download Report
+              Hesabatı Yüklə
             </button>
           </div>
           <div className="adminHealthGrid">
             <div className="adminHealthMetric">
-              <div className="adminHealthLabel">Uptime</div>
+              <div className="adminHealthLabel">İş Vaxtı</div>
               <div className="adminHealthValue">99.98%</div>
               <div className="adminBar">
                 <div className="adminBarFill adminBarFillOk" style={{ width: '92%' }} />
               </div>
             </div>
             <div className="adminHealthMetric">
-              <div className="adminHealthLabel">Server Load</div>
+              <div className="adminHealthLabel">Server Yükü</div>
               <div className="adminHealthValue">24%</div>
               <div className="adminBar">
                 <div className="adminBarFill adminBarFillInfo" style={{ width: '24%' }} />
               </div>
             </div>
             <div className="adminHealthMetric">
-              <div className="adminHealthLabel">API Status</div>
-              <div className="adminHealthValue">Operational</div>
-              <div className="adminPill adminPillOk">All systems are green</div>
+              <div className="adminHealthLabel">API Statusu</div>
+              <div className="adminHealthValue">İşlək</div>
+              <div className="adminPill adminPillOk">Bütün sistemlər işlək vəziyyətdədir</div>
             </div>
           </div>
         </section>
@@ -103,22 +103,22 @@ export default function AdminHome(props: {
           <section className="adminCard">
             <div className="adminCardHeader">
               <div>
-                <div className="adminCardTitle">Advisory</div>
+                <div className="adminCardTitle">Xəbərdarlıq</div>
                 <div className="adminCardSubtitle">
-                  Upcoming system maintenance scheduled for Sunday at 02:00 AM UTC.
+                  Növbəti sistem texniki xidməti bazar günü saat 02:00 UTC-də planlaşdırılıb.
                 </div>
               </div>
             </div>
             <button type="button" className="adminCta adminCtaGhost adminCtaFull">
-              Notify Now
+              İndi Bildiriş Göndər
             </button>
           </section>
 
           <section className="adminCard">
             <div className="adminCardHeader">
               <div>
-                <div className="adminCardTitle">User Growth</div>
-                <div className="adminCardSubtitle">Weekly overview</div>
+                <div className="adminCardTitle">İstifadəçi Artımı</div>
+                <div className="adminCardSubtitle">Həftəlik icmal</div>
               </div>
             </div>
             <div className="adminChart" aria-hidden="true" />

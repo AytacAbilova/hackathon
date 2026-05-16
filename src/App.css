@@ -978,8 +978,16 @@
   border-radius: 26px;
   border: 1px solid var(--border);
   background:
-    radial-gradient(900px 500px at 0% 0%, rgba(170, 59, 255, 0.16), transparent 55%),
-    radial-gradient(750px 450px at 90% 10%, rgba(59, 130, 246, 0.14), transparent 55%),
+    radial-gradient(
+      900px 500px at 0% 0%,
+      rgba(170, 59, 255, 0.16),
+      transparent 55%
+    ),
+    radial-gradient(
+      750px 450px at 90% 10%,
+      rgba(59, 130, 246, 0.14),
+      transparent 55%
+    ),
     var(--surface);
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow);
@@ -1337,7 +1345,11 @@
   width: 42px;
   height: 42px;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(170, 59, 255, 0.18), rgba(59, 130, 246, 0.16));
+  background: linear-gradient(
+    135deg,
+    rgba(170, 59, 255, 0.18),
+    rgba(59, 130, 246, 0.16)
+  );
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -1438,8 +1450,16 @@
   border-radius: 26px;
   padding: 22px;
   background:
-    radial-gradient(800px 500px at 30% 0%, rgba(170, 59, 255, 0.14), transparent 60%),
-    radial-gradient(700px 420px at 80% 40%, rgba(59, 130, 246, 0.12), transparent 60%),
+    radial-gradient(
+      800px 500px at 30% 0%,
+      rgba(170, 59, 255, 0.14),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 420px at 80% 40%,
+      rgba(59, 130, 246, 0.12),
+      transparent 60%
+    ),
     rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
@@ -1452,8 +1472,16 @@
   .ctaBlock {
     border-color: rgba(255, 255, 255, 0.1);
     background:
-      radial-gradient(800px 500px at 30% 0%, rgba(192, 132, 252, 0.2), transparent 60%),
-      radial-gradient(700px 420px at 80% 40%, rgba(59, 130, 246, 0.16), transparent 60%),
+      radial-gradient(
+        800px 500px at 30% 0%,
+        rgba(192, 132, 252, 0.2),
+        transparent 60%
+      ),
+      radial-gradient(
+        700px 420px at 80% 40%,
+        rgba(59, 130, 246, 0.16),
+        transparent 60%
+      ),
       rgba(22, 23, 29, 0.55);
   }
 }
@@ -1496,9 +1524,21 @@
   --surface-2: rgba(17, 25, 40, 0.55);
   --shadow: rgba(0, 0, 0, 0.35) 0 18px 40px;
   background:
-    radial-gradient(900px 600px at 0% 0%, rgba(99, 102, 241, 0.16), transparent 55%),
-    radial-gradient(850px 560px at 85% 15%, rgba(56, 189, 248, 0.12), transparent 55%),
-    radial-gradient(900px 600px at 50% 100%, rgba(168, 85, 247, 0.12), transparent 55%),
+    radial-gradient(
+      900px 600px at 0% 0%,
+      rgba(99, 102, 241, 0.16),
+      transparent 55%
+    ),
+    radial-gradient(
+      850px 560px at 85% 15%,
+      rgba(56, 189, 248, 0.12),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px 600px at 50% 100%,
+      rgba(168, 85, 247, 0.12),
+      transparent 55%
+    ),
     var(--bg);
   min-height: 100svh;
 }
@@ -1573,7 +1613,11 @@
   color: #fff;
   font-weight: 900;
   letter-spacing: -0.3px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(56, 189, 248, 0.85));
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.95),
+    rgba(56, 189, 248, 0.85)
+  );
   box-shadow: rgba(99, 102, 241, 0.25) 0 14px 28px;
 }
 
@@ -1640,7 +1684,7 @@
 }
 
 .studentNavIcon::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 6px;
   border-radius: 6px;
@@ -1784,7 +1828,7 @@
 }
 
 .studentSearchIcon::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 9px;
   height: 2px;
@@ -1826,7 +1870,7 @@
 }
 
 .studentIconBtn::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 11px;
   border-radius: 8px;
@@ -1849,7 +1893,11 @@
   gap: 14px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, rgba(17, 25, 40, 0.78), rgba(12, 18, 30, 0.72));
+  background: linear-gradient(
+    180deg,
+    rgba(17, 25, 40, 0.78),
+    rgba(12, 18, 30, 0.72)
+  );
   box-shadow: rgba(0, 0, 0, 0.4) 0 18px 40px;
   overflow: hidden;
 }
@@ -1919,8 +1967,16 @@
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    radial-gradient(260px 180px at 30% 30%, rgba(99, 102, 241, 0.35), transparent 60%),
-    radial-gradient(240px 160px at 70% 60%, rgba(56, 189, 248, 0.28), transparent 60%),
+    radial-gradient(
+      260px 180px at 30% 30%,
+      rgba(99, 102, 241, 0.35),
+      transparent 60%
+    ),
+    radial-gradient(
+      240px 160px at 70% 60%,
+      rgba(56, 189, 248, 0.28),
+      transparent 60%
+    ),
     rgba(7, 11, 20, 0.25);
   animation: floaty 5.2s ease-in-out infinite;
 }
@@ -2021,8 +2077,16 @@
 
 .studentEventThumb {
   background:
-    radial-gradient(150px 90px at 20% 30%, rgba(56, 189, 248, 0.35), transparent 60%),
-    radial-gradient(160px 100px at 80% 70%, rgba(99, 102, 241, 0.28), transparent 60%),
+    radial-gradient(
+      150px 90px at 20% 30%,
+      rgba(56, 189, 248, 0.35),
+      transparent 60%
+    ),
+    radial-gradient(
+      160px 100px at 80% 70%,
+      rgba(99, 102, 241, 0.28),
+      transparent 60%
+    ),
     rgba(0, 0, 0, 0.25);
 }
 
@@ -2130,7 +2194,7 @@
 }
 
 .studentQuickIcon::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 12px;
   border-radius: 10px;
@@ -2277,7 +2341,11 @@
   width: 100%;
   border-radius: 16px;
   border: 1px solid rgba(99, 102, 241, 0.35);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(56, 189, 248, 0.85));
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.95),
+    rgba(56, 189, 248, 0.85)
+  );
   color: #fff;
   font-weight: 950;
   padding: 12px 14px;
@@ -2357,8 +2425,16 @@
   align-items: flex-start;
   justify-content: flex-start;
   background:
-    radial-gradient(260px 140px at 20% 20%, rgba(99, 102, 241, 0.28), transparent 60%),
-    radial-gradient(260px 160px at 90% 70%, rgba(56, 189, 248, 0.22), transparent 60%),
+    radial-gradient(
+      260px 140px at 20% 20%,
+      rgba(99, 102, 241, 0.28),
+      transparent 60%
+    ),
+    radial-gradient(
+      260px 160px at 90% 70%,
+      rgba(56, 189, 248, 0.22),
+      transparent 60%
+    ),
     rgba(0, 0, 0, 0.35);
 }
 
@@ -2498,8 +2574,16 @@
   height: 34px;
   border-radius: 14px;
   background:
-    radial-gradient(18px 18px at 30% 30%, rgba(56, 189, 248, 0.65), transparent 60%),
-    radial-gradient(18px 18px at 70% 70%, rgba(99, 102, 241, 0.55), transparent 60%),
+    radial-gradient(
+      18px 18px at 30% 30%,
+      rgba(56, 189, 248, 0.65),
+      transparent 60%
+    ),
+    radial-gradient(
+      18px 18px at 70% 70%,
+      rgba(99, 102, 241, 0.55),
+      transparent 60%
+    ),
     rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -2573,9 +2657,21 @@
   --surface-2: rgba(12, 18, 30, 0.62);
   --shadow: rgba(0, 0, 0, 0.45) 0 18px 44px;
   background:
-    radial-gradient(900px 600px at 0% 0%, rgba(99, 102, 241, 0.14), transparent 55%),
-    radial-gradient(850px 560px at 85% 15%, rgba(56, 189, 248, 0.1), transparent 55%),
-    radial-gradient(900px 600px at 50% 100%, rgba(168, 85, 247, 0.1), transparent 55%),
+    radial-gradient(
+      900px 600px at 0% 0%,
+      rgba(99, 102, 241, 0.14),
+      transparent 55%
+    ),
+    radial-gradient(
+      850px 560px at 85% 15%,
+      rgba(56, 189, 248, 0.1),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px 600px at 50% 100%,
+      rgba(168, 85, 247, 0.1),
+      transparent 55%
+    ),
     var(--bg);
   min-height: 100svh;
 }
@@ -2627,7 +2723,11 @@
   color: #fff;
   font-weight: 900;
   letter-spacing: -0.3px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(56, 189, 248, 0.85));
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.95),
+    rgba(56, 189, 248, 0.85)
+  );
   box-shadow: rgba(99, 102, 241, 0.25) 0 14px 28px;
 }
 
@@ -2687,7 +2787,7 @@
 }
 
 .adminNavIcon::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 6px;
   border-radius: 6px;
@@ -2841,7 +2941,7 @@
 }
 
 .adminSearchIcon::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 9px;
   height: 2px;
@@ -2883,7 +2983,7 @@
 }
 
 .adminIconBtn::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 11px;
   border-radius: 8px;
@@ -2951,7 +3051,11 @@
 .adminCta {
   border-radius: 16px;
   border: 1px solid rgba(99, 102, 241, 0.35);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(56, 189, 248, 0.85));
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.95),
+    rgba(56, 189, 248, 0.85)
+  );
   color: #fff;
   font-weight: 950;
   padding: 10px 12px;
@@ -3235,8 +3339,16 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
-    radial-gradient(420px 180px at 20% 30%, rgba(99, 102, 241, 0.22), transparent 60%),
-    radial-gradient(420px 180px at 80% 70%, rgba(56, 189, 248, 0.18), transparent 60%),
+    radial-gradient(
+      420px 180px at 20% 30%,
+      rgba(99, 102, 241, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      420px 180px at 80% 70%,
+      rgba(56, 189, 248, 0.18),
+      transparent 60%
+    ),
     rgba(0, 0, 0, 0.22);
 }
 
@@ -3430,6 +3542,11 @@
 .adminTableRight {
   text-align: right;
   white-space: nowrap;
+  
+}
+
+.adminTableRight button {
+  margin-right: 8px;
 }
 
 .adminUserCell {

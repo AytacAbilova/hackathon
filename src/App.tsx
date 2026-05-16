@@ -8,8 +8,8 @@ import LoginView from './pages/auth/LoginView'
 import RegisterView from './pages/auth/RegisterView'
 import AdminHome from './pages/admin/AdminHome'
 import AdminUsers from './pages/admin/AdminUsers'
+import AdminStats from "./pages/admin/AdminStats"
 import AdminAnnouncements from './pages/admin/AdminAnnouncements'
-import AdminStats from './pages/admin/AdminStats'
 import TeacherHome from './pages/teacher/TeacherHome'
 import TeacherAnnouncements from './pages/teacher/TeacherAnnouncements'
 import TeacherEvents from './pages/teacher/TeacherEvents'
@@ -273,7 +273,7 @@ function App() {
   ) => {
     if (!currentUser) return
     if (currentUser.role !== 'teacher') {
-      toast.error('Event yalnız müəllim tərəfindən əlavə edilə bilər')
+      toast.error('Tədbiri yalnız müəllim əlavə edə bilər')
       return
     }
     if (!title.trim() || !location.trim() || !startsAt) {
@@ -290,7 +290,7 @@ function App() {
       createdByUserId: currentUser.id,
     }
     setEvents((prev) => [newEvent, ...prev])
-    toast.success('Event əlavə olundu')
+    toast.success('Tədbir əlavə olundu')
   }
 
   const createLostFound = (
@@ -302,7 +302,7 @@ function App() {
   ) => {
     if (!currentUser) return
     if (currentUser.role !== 'student') {
-      toast.error('Lost & Found yalnız tələbə üçün aktivdir')
+      toast.error('İtirilən/tapılan yalnız tələbə üçün aktivdir')
       return
     }
     if (!itemTitle.trim() || !location.trim() || !contact.trim()) {
@@ -331,7 +331,7 @@ function App() {
   ) => {
     if (!currentUser) return
     if (currentUser.role !== 'student') {
-      toast.error('Team Finder yalnız tələbə üçün aktivdir')
+      toast.error('Komanda tapıcı yalnız tələbə üçün aktivdir')
       return
     }
     const skills = skillsRaw
@@ -344,7 +344,7 @@ function App() {
       return
     }
     if (skills.length === 0) {
-      toast.error('Komanda elanında ən az 1 skill qeyd olunmalıdır')
+      toast.error('Komanda elanında ən az 1 bacarıq qeyd olunmalıdır')
       return
     }
     if (!contact.trim()) {
@@ -408,41 +408,41 @@ function App() {
     if (!currentUser) return []
     if (currentUser.role === 'admin') {
       return [
-        { to: '/admin', label: 'Dashboard' },
-        { to: '/admin/users', label: 'User list' },
+        { to: '/admin', label: 'İdarə paneli' },
+        { to: '/admin/users', label: 'İstifadəçi siyahısı' },
         { to: '/admin/announcements', label: 'Elanlar' },
         { to: '/admin/stats', label: 'Statistika' },
       ]
     }
     if (currentUser.role === 'teacher') {
       return [
-        { to: '/teacher', label: 'Dashboard' },
+        { to: '/teacher', label: 'İdarə paneli' },
         { to: '/teacher/announcements', label: 'Elan yarat' },
-        { to: '/teacher/events', label: 'Event əlavə et' },
+        { to: '/teacher/events', label: 'Tədbir əlavə et' },
       ]
     }
     return [
-      { to: '/student', label: 'Dashboard' },
-      { to: '/student/lost-found', label: 'Lost & Found' },
-      { to: '/student/team-finder', label: 'Team Finder' },
+      { to: '/student', label: 'İdarə paneli' },
+      { to: '/student/lost-found', label: 'İtirilən və tapılan' },
+      { to: '/student/team-finder', label: 'Komanda tapıcı' },
     ]
   }, [currentUser])
 
   const title = useMemo(() => {
-    if (route === '/') return 'Home'
-    if (route.startsWith('/admin/users')) return 'User List'
-    if (route.startsWith('/admin/announcements')) return 'Announcements'
-    if (route.startsWith('/admin/stats')) return 'Analytics'
-    if (route.startsWith('/admin')) return 'Admin Console'
+    if (route === '/') return 'Əsas səhifə'
+    if (route.startsWith('/admin/users')) return 'İstifadəçi siyahısı'
+    if (route.startsWith('/admin/announcements')) return 'Elanlar'
+    if (route.startsWith('/admin/stats')) return 'Analitika'
+    if (route.startsWith('/admin')) return 'Admin konsolu'
     if (route.startsWith('/teacher/announcements')) return 'Elan yaratma'
-    if (route.startsWith('/teacher/events')) return 'Event əlavə etmə'
-    if (route.startsWith('/teacher')) return 'Müəllim dashboard'
-    if (route.startsWith('/student/lost-found')) return 'Lost & Found'
-    if (route.startsWith('/student/team-finder')) return 'Team Finder'
-    if (route.startsWith('/student')) return 'Tələbə dashboard'
+    if (route.startsWith('/teacher/events')) return 'Tədbir əlavə etmə'
+    if (route.startsWith('/teacher')) return 'Müəllim idarə paneli'
+    if (route.startsWith('/student/lost-found')) return 'İtirilən və tapılan'
+    if (route.startsWith('/student/team-finder')) return 'Komanda tapıcı'
+    if (route.startsWith('/student')) return 'Tələbə idarə paneli'
     if (route === '/register') return 'Qeydiyyat'
-    if (route === '/login') return 'Login'
-    return 'Login'
+    if (route === '/login') return 'Daxil ol'
+    return 'Daxil ol'
   }, [route])
 
   const userName = currentUser?.fullName ?? 'Qonaq'
@@ -475,7 +475,7 @@ function App() {
       createdAt: nowIso(),
     }
     setUsers((prev) => [newUser, ...prev])
-    toast.success('User yaradıldı')
+    toast.success('İstifadəçi yaradıldı')
   }
 
   const adminUpdateUser = (
@@ -508,7 +508,7 @@ function App() {
           : u,
       ),
     )
-    toast.success('User yeniləndi')
+    toast.success('İstifadəçi yeniləndi')
   }
 
   const adminDeleteUser = (id: string) => {
@@ -518,7 +518,7 @@ function App() {
       return
     }
     setUsers((prev) => prev.filter((u) => u.id !== id))
-    toast.success('User silindi')
+    toast.success('İstifadəçi silindi')
   }
 
   return (
@@ -547,7 +547,7 @@ function App() {
 
         <div className={currentUser ? 'appBody' : 'appBody appBodyPublic'}>
           {currentUser && currentUser.role !== 'student' && currentUser.role !== 'admin' ? (
-            <aside className="sidebar" aria-label="Navigation">
+            <aside className="sidebar" aria-label="Naviqasiya">
               <div className="sidebarSection">
                 <div className="sidebarRole">
                   <div className="avatar">{userName.trim().slice(0, 1).toUpperCase()}</div>
@@ -588,8 +588,8 @@ function App() {
             {currentUser?.role === 'admin' ? (
               <AdminTopbar
                 title={title}
-                subtitle="Here is an overview of the academy’s performance and system health."
-                placeholder="Search users..."
+                subtitle="Akademiyanın fəaliyyətinə və sistem sağlamlığına ümumi baxış."
+                placeholder="İstifadəçi axtar..."
               />
             ) : null}
 
