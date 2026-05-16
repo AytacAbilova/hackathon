@@ -16,6 +16,8 @@ import TeacherEvents from './pages/teacher/TeacherEvents'
 import StudentHome from './pages/student/StudentHome'
 import StudentLostFound from './pages/student/StudentLostFound'
 import StudentTeamFinder from './pages/student/StudentTeamFinder'
+import AdminSidebar from './components/admin/AdminSidebar'
+import AdminTopbar from './components/admin/AdminTopbar'
 import StudentSidebar from './components/student/StudentSidebar'
 import useHashRoute from './hooks/useHashRoute'
 import type {
@@ -368,10 +370,10 @@ function App() {
 
   const title = useMemo(() => {
     if (route === '/') return 'Home'
-    if (route.startsWith('/admin/users')) return 'User list'
-    if (route.startsWith('/admin/announcements')) return 'Elanlar'
-    if (route.startsWith('/admin/stats')) return 'Statistik dashboard'
-    if (route.startsWith('/admin')) return 'Admin dashboard'
+    if (route.startsWith('/admin/users')) return 'User List'
+    if (route.startsWith('/admin/announcements')) return 'Announcements'
+    if (route.startsWith('/admin/stats')) return 'Analytics'
+    if (route.startsWith('/admin')) return 'Admin Console'
     if (route.startsWith('/teacher/announcements')) return 'Elan yaratma'
     if (route.startsWith('/teacher/events')) return 'Event əlavə etmə'
     if (route.startsWith('/teacher')) return 'Müəllim dashboard'
@@ -461,8 +463,16 @@ function App() {
 
   return (
     <>
-      <div className={currentUser?.role === 'student' ? 'appShell studentShell' : 'appShell'}>
-        {currentUser?.role !== 'student' ? (
+      <div
+        className={
+          currentUser?.role === 'student'
+            ? 'appShell studentShell'
+            : currentUser?.role === 'admin'
+              ? 'appShell adminShell'
+              : 'appShell'
+        }
+      >
+        {currentUser?.role !== 'student' && currentUser?.role !== 'admin' ? (
           <Header
             title={title}
             userName={userName}
@@ -476,7 +486,7 @@ function App() {
         ) : null}
 
         <div className={currentUser ? 'appBody' : 'appBody appBodyPublic'}>
-          {currentUser && currentUser.role !== 'student' ? (
+          {currentUser && currentUser.role !== 'student' && currentUser.role !== 'admin' ? (
             <aside className="sidebar" aria-label="Navigation">
               <div className="sidebarSection">
                 <div className="sidebarRole">
@@ -506,11 +516,23 @@ function App() {
             </aside>
           ) : null}
 
+          {currentUser?.role === 'admin' ? (
+            <AdminSidebar user={currentUser} route={route} onNavigate={navigate} onLogout={logout} />
+          ) : null}
+
           {currentUser?.role === 'student' ? (
             <StudentSidebar user={currentUser} route={route} onNavigate={navigate} onLogout={logout} />
           ) : null}
 
           <main className="content">
+            {currentUser?.role === 'admin' ? (
+              <AdminTopbar
+                title={title}
+                subtitle="Here is an overview of the academy’s performance and system health."
+                placeholder="Search users..."
+              />
+            ) : null}
+
             {!currentUser && route === '/' ? <LandingPage /> : null}
 
             {!currentUser && route !== '/register' && route !== '/' ? (
@@ -604,7 +626,7 @@ function App() {
           </main>
         </div>
 
-        {currentUser?.role !== 'student' ? <Footer /> : null}
+        {currentUser?.role !== 'student' && currentUser?.role !== 'admin' ? <Footer /> : null}
       </div>
 
       <ToastContainer position="bottom-right" autoClose={2500} theme="colored" />
