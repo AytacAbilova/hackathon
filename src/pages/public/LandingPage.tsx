@@ -1,26 +1,11 @@
 import styles from "./LandingPage.module.css"
-import {
-  Calendar,
-  Megaphone,
-  CalendarDays,
-  Users,
-  Search,
-  Briefcase,
-  Globe,
-  Share2,
-  Code2,
-  Server,
-  Pen,
-  BarChart2,
-  ArrowRight,
-} from "lucide-react"
 
 export default function LandingPage() {
   const courses = [
-    { title: "Frontend (React)", meta: "12 dərs · Praktika", level: "Beginner", icon: <Code2 size={18} /> },
-    { title: "Backend (Node.js)", meta: "10 dərs · API", level: "Intermediate", icon: <Server size={18} /> },
-    { title: "UI/UX Design", meta: "8 dərs · Figma", level: "Beginner", icon: <Pen size={18} /> },
-    { title: "Data Basics", meta: "6 dərs · Analitika", level: "Starter", icon: <BarChart2 size={18} /> },
+    { title: "Frontend (React)", meta: "12 dərs · Praktika", level: "Beginner" },
+    { title: "Backend (Node.js)", meta: "10 dərs · API", level: "Intermediate" },
+    { title: "UI/UX Design", meta: "8 dərs · Figma", level: "Beginner" },
+    { title: "Data Basics", meta: "6 dərs · Analitika", level: "Starter" },
   ]
 
   const stats = [
@@ -113,7 +98,7 @@ export default function LandingPage() {
           </div>
 
           <a href="#/login" className={styles.coursesLink}>
-            Platformaya keç <ArrowRight size={14} />
+            Platformaya keç <span aria-hidden="true">→</span>
           </a>
         </div>
 
@@ -121,7 +106,7 @@ export default function LandingPage() {
           {courses.map((c) => (
             <div key={c.title} className={styles.courseCard}>
               <div className={styles.courseCardTop}>
-                <div className={styles.courseIcon}>{c.icon}</div>
+                <div className={styles.courseIcon} />
                 <span className={`${styles.badge} ${badgeClass[c.level] ?? ""}`}>
                   {c.level}
                 </span>
@@ -150,9 +135,7 @@ export default function LandingPage() {
 
         <div className={styles.featuresGrid}>
           <div className={styles.featureCardFeatured}>
-            <div className={styles.featureIconFeatured}>
-              <Calendar size={24} />
-            </div>
+            <div className={styles.featureIconFeatured} />
             <div className={styles.featureTitleFeatured}>Dərs cədvəli</div>
             <div className={styles.featureDescFeatured}>
               Cədvələ 1 yerdən sürətli çıxış imkanı ilə planlamanızı asanlaşdırın.
@@ -160,22 +143,22 @@ export default function LandingPage() {
           </div>
 
           <div className={styles.featureCard}>
-            <div className={styles.featureIcon}><Megaphone size={20} /></div>
+            <div className={styles.featureIcon} />
             <div className={styles.featureTitle}>Elanlar</div>
           </div>
 
           <div className={styles.featureCard}>
-            <div className={styles.featureIcon}><CalendarDays size={20} /></div>
+            <div className={styles.featureIcon} />
             <div className={styles.featureTitle}>Eventlər</div>
           </div>
 
           <div className={styles.featureCard}>
-            <div className={styles.featureIcon}><Users size={20} /></div>
+            <div className={styles.featureIcon} />
             <div className={styles.featureTitle}>Team Finder</div>
           </div>
 
           <div className={styles.featureCard}>
-            <div className={styles.featureIcon}><Search size={20} /></div>
+            <div className={styles.featureIcon} />
             <div className={styles.featureTitle}>Lost & Found</div>
           </div>
 
@@ -184,7 +167,7 @@ export default function LandingPage() {
               <div className={styles.featureTitle}>Vakansiyalar</div>
             </div>
             <div className={styles.featureIconWide}>
-              <Briefcase size={28} />
+              <span aria-hidden="true">▣</span>
             </div>
           </div>
         </div>

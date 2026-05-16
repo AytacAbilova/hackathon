@@ -37,15 +37,19 @@ export type EventItem = {
 
 export type LostFoundType = 'lost' | 'found'
 
+export type LostFoundStatus = 0 | 1 | 2
+
 export type LostFoundPost = {
   id: string
-  type: LostFoundType
-  itemTitle: string
-  location: string
   description: string
   contact: string
+  imageUrl: string
+  status: LostFoundStatus
+  title: string
   createdAt: string
+  updatedAt?: string
   createdByUserId: string
+  createdByName?: string
 }
 
 export type TeamPost = {

@@ -1,4 +1,4 @@
-import type { AnnouncementCategory, Role } from '../types/models'
+import type { AnnouncementCategory, LostFoundStatus, Role } from '../types/models'
 
 export function nowIso() {
   return new Date().toISOString()
@@ -47,6 +47,19 @@ export function announcementCategoryLabel(category: AnnouncementCategory) {
   if (category === 2) return 'Academic'
   if (category === 3) return 'Social'
   return 'Career'
+}
+
+export function lostFoundStatusLabel(status: LostFoundStatus) {
+  if (status === 0) return 'İtmiş'
+  if (status === 1) return 'Tapılmış'
+  return 'Həll olundu'
+}
+
+export function extractLostFoundLocation(description: string) {
+  const line = description.split('\n')[0] ?? ''
+  const m = line.match(/^\s*(yer|location)\s*:\s*(.+)\s*$/i)
+  if (!m) return ''
+  return m[2] ?? ''
 }
 
 export function canAccess(route: string, role: Role) {

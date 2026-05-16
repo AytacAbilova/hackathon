@@ -1,6 +1,6 @@
 import StudentTopbar from '../../components/student/StudentTopbar'
 import type { Announcement, EventItem, LostFoundPost, TeamPost } from '../../types/models'
-import { formatDate } from '../../lib/utils'
+import { extractLostFoundLocation, formatDate, lostFoundStatusLabel } from '../../lib/utils'
 
 export default function StudentHome(props: {
   announcements: Announcement[]
@@ -117,11 +117,19 @@ export default function StudentHome(props: {
             {props.lostFound.map((p) => (
               <div key={p.id} className="studentRowCard">
                 <div className="studentRowLeft">
-                  <span className={p.type === 'lost' ? 'studentPill studentPillLost' : 'studentPill studentPillFound'}>
-                    {p.type === 'lost' ? 'İtmiş' : 'Tapılmış'}
+                  <span
+                    className={
+                      p.status === 0
+                        ? 'studentPill studentPillLost'
+                        : p.status === 1
+                          ? 'studentPill studentPillFound'
+                          : 'studentPill studentPillInfo'
+                    }
+                  >
+                    {lostFoundStatusLabel(p.status)}
                   </span>
-                  <div className="studentRowTitle">{p.itemTitle}</div>
-                  <div className="studentMeta">{p.location}</div>
+                  <div className="studentRowTitle">{p.title}</div>
+                  <div className="studentMeta">{extractLostFoundLocation(p.description) || '—'}</div>
                 </div>
                 <div className="studentMeta">{formatDate(p.createdAt)}</div>
               </div>

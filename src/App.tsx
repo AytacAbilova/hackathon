@@ -24,12 +24,13 @@ import { getApiErrorMessage, getStoredTokens } from './lib/api'
 import { getSessionFromAccessToken } from './lib/jwt'
 import * as authService from './services/auth'
 import * as announcementsService from './services/announcements'
+import * as lostFoundService from './services/lostFound'
 import type {
   Announcement,
   AnnouncementCategory,
   EventItem,
   LostFoundPost,
-  LostFoundType,
+  LostFoundStatus,
   Role,
   Stats,
   TeamPost,
@@ -75,9 +76,7 @@ function App() {
   const [approvedAnnouncements, setApprovedAnnouncements] = useState<Announcement[]>([])
   const [pendingAnnouncements, setPendingAnnouncements] = useState<Announcement[]>([])
   const [events, setEvents] = useState<EventItem[]>(() => readJson<EventItem[]>(storageKeys.events, []))
-  const [lostFound, setLostFound] = useState<LostFoundPost[]>(() =>
-    readJson<LostFoundPost[]>(storageKeys.lostFound, []),
-  )
+  const [lostFoundItems, setLostFoundItems] = useState<LostFoundPost[]>([])
   const [teamPosts, setTeamPosts] = useState<TeamPost[]>(() => readJson<TeamPost[]>(storageKeys.teamPosts, []))
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
@@ -102,10 +101,6 @@ function App() {
   useEffect(() => {
     writeJson(storageKeys.events, events)
   }, [events])
-
-  useEffect(() => {
-    writeJson(storageKeys.lostFound, lostFound)
-  }, [lostFound])
 
   useEffect(() => {
     writeJson(storageKeys.teamPosts, teamPosts)
@@ -150,6 +145,7 @@ function App() {
       setCurrentUserId(null)
       setApprovedAnnouncements([])
       setPendingAnnouncements([])
+      setLostFoundItems([])
       toast.success('Çıxış edildi')
       navigate('/login')
     }
@@ -162,6 +158,30 @@ function App() {
   const logout = () => {
     void authService.revoke()
   }
+
+  useEffect(() => {
+    if (currentUser?.role !== 'student') return
+    let cancelled = false
+
+    Promise.all([
+      lostFoundService.list({ page: 1, pageSize: 50, status: 0 }),
+      lostFoundService.list({ page: 1, pageSize: 50, status: 1 }),
+      lostFoundService.list({ page: 1, pageSize: 50, status: 2 }),
+    ])
+      .then((res) => {
+        if (cancelled) return
+        const merged = [...res[0].items, ...res[1].items, ...res[2].items]
+        setLostFoundItems(sortByCreatedAtDesc(merged))
+      })
+      .catch((e) => {
+        if (cancelled) return
+        toast.error(getApiErrorMessage(e))
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentUser?.role])
 
   const login = async (email: string, password: string) => {
     try {
@@ -358,33 +378,112 @@ function App() {
   }
 
   const createLostFound = (
-    type: LostFoundType,
-    itemTitle: string,
+    status: LostFoundStatus,
+    title: string,
     location: string,
     description: string,
     contact: string,
+    imageUrl: string,
   ) => {
     if (!currentUser) return
     if (currentUser.role !== 'student') {
       toast.error('İtirilən/tapılan yalnız tələbə üçün aktivdir')
       return
     }
-    if (!itemTitle.trim() || !location.trim() || !contact.trim()) {
+    if (!title.trim() || !location.trim() || !contact.trim()) {
       toast.error('Əşya adı, yer və əlaqə məlumatı mütləqdir')
       return
     }
-    const post: LostFoundPost = {
-      id: makeId('lf'),
-      type,
-      itemTitle: itemTitle.trim(),
-      location: location.trim(),
-      description: description.trim(),
-      contact: contact.trim(),
-      createdAt: nowIso(),
-      createdByUserId: currentUser.id,
-    }
-    setLostFound((prev) => [post, ...prev])
-    toast.success('Paylaşım əlavə olundu')
+    void lostFoundService
+      .create({
+        title: title.trim(),
+        description: `Yer: ${location.trim()}\n${description.trim()}`.trim(),
+        contact: contact.trim(),
+        imageUrl: imageUrl.trim(),
+        status,
+      })
+      .then(() =>
+        Promise.all([
+          lostFoundService.list({ page: 1, pageSize: 50, status: 0 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 1 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 2 }),
+        ]),
+      )
+      .then((res) => {
+        const merged = [...res[0].items, ...res[1].items, ...res[2].items]
+        setLostFoundItems(sortByCreatedAtDesc(merged))
+        toast.success('Paylaşım əlavə olundu')
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
+  }
+
+  const updateLostFound = (
+    id: string,
+    title: string,
+    location: string,
+    description: string,
+    contact: string,
+    imageUrl: string,
+  ) => {
+    if (!currentUser) return
+    void lostFoundService
+      .update(id, {
+        title: title.trim(),
+        description: `Yer: ${location.trim()}\n${description.trim()}`.trim(),
+        contact: contact.trim(),
+        imageUrl: imageUrl.trim(),
+      })
+      .then(() =>
+        Promise.all([
+          lostFoundService.list({ page: 1, pageSize: 50, status: 0 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 1 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 2 }),
+        ]),
+      )
+      .then((res) => {
+        const merged = [...res[0].items, ...res[1].items, ...res[2].items]
+        setLostFoundItems(sortByCreatedAtDesc(merged))
+        toast.success('Yeniləndi')
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
+  }
+
+  const changeLostFoundStatus = (id: string, status: LostFoundStatus) => {
+    if (!currentUser) return
+    void lostFoundService
+      .setStatus(id, status)
+      .then(() =>
+        Promise.all([
+          lostFoundService.list({ page: 1, pageSize: 50, status: 0 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 1 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 2 }),
+        ]),
+      )
+      .then((res) => {
+        const merged = [...res[0].items, ...res[1].items, ...res[2].items]
+        setLostFoundItems(sortByCreatedAtDesc(merged))
+        toast.success('Status yeniləndi')
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
+  }
+
+  const deleteLostFound = (id: string) => {
+    if (!currentUser) return
+    void lostFoundService
+      .remove(id)
+      .then(() =>
+        Promise.all([
+          lostFoundService.list({ page: 1, pageSize: 50, status: 0 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 1 }),
+          lostFoundService.list({ page: 1, pageSize: 50, status: 2 }),
+        ]),
+      )
+      .then((res) => {
+        const merged = [...res[0].items, ...res[1].items, ...res[2].items]
+        setLostFoundItems(sortByCreatedAtDesc(merged))
+        toast.success('Silindi')
+      })
+      .catch((e) => toast.error(getApiErrorMessage(e)))
   }
 
   const createTeamPost = (
@@ -430,7 +529,7 @@ function App() {
   }
 
   const eventsSorted = useMemo(() => sortByCreatedAtDesc(events), [events])
-  const lostFoundSorted = useMemo(() => sortByCreatedAtDesc(lostFound), [lostFound])
+  const lostFoundSorted = useMemo(() => sortByCreatedAtDesc(lostFoundItems), [lostFoundItems])
   const teamPostsSorted = useMemo(() => sortByCreatedAtDesc(teamPosts), [teamPosts])
 
   const stats = useMemo(() => {
@@ -447,14 +546,14 @@ function App() {
       announcementsPending: pendingAnnouncements.length,
       announcementsApproved: approvedAnnouncements.length,
       eventsTotal: events.length,
-      lostFoundTotal: lostFound.length,
+      lostFoundTotal: lostFoundItems.length,
       teamPostsTotal: teamPosts.length,
     }
     return s
   }, [
     approvedAnnouncements.length,
     events.length,
-    lostFound.length,
+    lostFoundItems.length,
     pendingAnnouncements.length,
     teamPosts.length,
     users,
@@ -726,7 +825,11 @@ function App() {
               <StudentLostFound
                 posts={lostFoundSorted}
                 users={users}
+                currentUserId={currentUser.id}
                 onCreate={createLostFound}
+                onUpdate={updateLostFound}
+                onSetStatus={changeLostFoundStatus}
+                onDelete={deleteLostFound}
               />
             ) : null}
 

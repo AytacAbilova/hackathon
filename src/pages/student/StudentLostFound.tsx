@@ -1,28 +1,50 @@
 import { useState } from 'react'
 import StudentTopbar from '../../components/student/StudentTopbar'
 import { InputField, TextAreaField } from '../../components/ui/Fields'
-import type { LostFoundPost, LostFoundType, User } from '../../types/models'
-import { formatDate } from '../../lib/utils'
+import type { LostFoundPost, LostFoundStatus, User } from '../../types/models'
+import { extractLostFoundLocation, formatDate, lostFoundStatusLabel } from '../../lib/utils'
 
 export default function StudentLostFound(props: {
   posts: LostFoundPost[]
   users: User[]
+  currentUserId: string
   onCreate: (
-    type: LostFoundType,
-    itemTitle: string,
+    status: LostFoundStatus,
+    title: string,
     location: string,
     description: string,
     contact: string,
+    imageUrl: string,
   ) => void
+  onUpdate: (
+    id: string,
+    title: string,
+    location: string,
+    description: string,
+    contact: string,
+    imageUrl: string,
+  ) => void
+  onSetStatus: (id: string, status: LostFoundStatus) => void
+  onDelete: (id: string) => void
 }) {
-  const [type, setType] = useState<LostFoundType>('lost')
-  const [itemTitle, setItemTitle] = useState('')
+  const [status, setStatus] = useState<LostFoundStatus>(0)
+  const [title, setTitle] = useState('')
   const [location, setLocation] = useState('')
   const [description, setDescription] = useState('')
   const [contact, setContact] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [tab, setTab] = useState<'all' | 'lost' | 'found'>('all')
+  const [editingId, setEditingId] = useState<string | null>(null)
 
-  const resolveName = (userId: string) =>
-    props.users.find((u) => u.id === userId)?.fullName ?? '—'
+  const resolveName = (p: LostFoundPost) =>
+    props.users.find((u) => u.id === p.createdByUserId)?.fullName ?? p.createdByName ?? '—'
+
+  const visiblePosts =
+    tab === 'lost'
+      ? props.posts.filter((p) => p.status === 0)
+      : tab === 'found'
+        ? props.posts.filter((p) => p.status === 1)
+        : props.posts
 
   return (
     <div className="studentPage">
@@ -40,15 +62,15 @@ export default function StudentLostFound(props: {
               <div className="studentToggle">
                 <button
                   type="button"
-                  className={type === 'lost' ? 'studentToggleBtn studentToggleBtnActive' : 'studentToggleBtn'}
-                  onClick={() => setType('lost')}
+                  className={status === 0 ? 'studentToggleBtn studentToggleBtnActive' : 'studentToggleBtn'}
+                  onClick={() => setStatus(0)}
                 >
                   İtmiş
                 </button>
                 <button
                   type="button"
-                  className={type === 'found' ? 'studentToggleBtn studentToggleBtnActive' : 'studentToggleBtn'}
-                  onClick={() => setType('found')}
+                  className={status === 1 ? 'studentToggleBtn studentToggleBtnActive' : 'studentToggleBtn'}
+                  onClick={() => setStatus(1)}
                 >
                   Tapılmış
                 </button>
@@ -56,23 +78,25 @@ export default function StudentLostFound(props: {
             </label>
 
             <div className="studentFormFields">
-              <InputField label="Əşya adı" value={itemTitle} onChange={setItemTitle} placeholder="Məs: MacBook Pro, Tələbə kartı" />
+              <InputField label="Əşya adı" value={title} onChange={setTitle} placeholder="Məs: MacBook Pro, Tələbə kartı" />
               <InputField label="Yer" value={location} onChange={setLocation} placeholder="Məs: Kitabxana, 302-ci otaq..." />
               <TextAreaField label="Təsvir" value={description} onChange={setDescription} placeholder="Rəng, vəziyyəti və s. haqqında qısa məlumat..." />
               <InputField label="Əlaqə nömrəsi / Telegram" value={contact} onChange={setContact} placeholder="+994 50 000 00 00" />
+              <InputField label="Image URL" value={imageUrl} onChange={setImageUrl} placeholder="https://..." />
             </div>
 
             <button
               type="button"
               className="studentPrimaryBtn"
               onClick={() => {
-                props.onCreate(type, itemTitle, location, description, contact)
-                setItemTitle('')
+                props.onCreate(status, title, location, description, contact, imageUrl)
+                setTitle('')
                 setLocation('')
                 setDescription('')
                 setContact('')
+                setImageUrl('')
               }}
-              disabled={!itemTitle.trim() || !location.trim() || !contact.trim()}
+              disabled={!title.trim() || !location.trim() || !contact.trim()}
             >
               Paylaş
             </button>
@@ -83,46 +107,99 @@ export default function StudentLostFound(props: {
           <div className="studentSectionHeader">
             <div className="studentSectionTitle">Son paylaşımlar</div>
             <div className="studentTabs">
-              <button type="button" className="studentTab studentTabActive">
+              <button
+                type="button"
+                className={tab === 'all' ? 'studentTab studentTabActive' : 'studentTab'}
+                onClick={() => setTab('all')}
+              >
                 Hamısı
               </button>
-              <button type="button" className="studentTab">
+              <button
+                type="button"
+                className={tab === 'lost' ? 'studentTab studentTabActive' : 'studentTab'}
+                onClick={() => setTab('lost')}
+              >
                 İtmişlər
               </button>
-              <button type="button" className="studentTab">
+              <button
+                type="button"
+                className={tab === 'found' ? 'studentTab studentTabActive' : 'studentTab'}
+                onClick={() => setTab('found')}
+              >
                 Tapılanlar
               </button>
             </div>
           </div>
 
-          {props.posts.length === 0 ? <div className="studentEmpty">Paylaşım yoxdur</div> : null}
+          {visiblePosts.length === 0 ? <div className="studentEmpty">Paylaşım yoxdur</div> : null}
 
           <div className="studentLfGrid">
-            {props.posts.map((p) => (
+            {visiblePosts.map((p) => (
               <article key={p.id} className="studentMediaCard">
-                <div className="studentMediaThumb" aria-hidden="true">
-                  <span className={p.type === 'lost' ? 'studentPill studentPillLost' : 'studentPill studentPillFound'}>
-                    {p.type === 'lost' ? 'İtmiş' : 'Tapılmış'}
-                  </span>
-                </div>
+                <div className="studentMediaThumb" aria-hidden="true" />
                 <div className="studentMediaBody">
-                  <div className="studentMediaTitle">{p.itemTitle}</div>
-                  <div className="studentMediaMeta">
-                    <span className="studentMeta">{p.location}</span>
-                    <span className="studentDot">•</span>
+                  <div className="studentListCardTop">
+                    <span
+                      className={
+                        p.status === 0
+                          ? 'studentPill studentPillLost'
+                          : p.status === 1
+                            ? 'studentPill studentPillFound'
+                            : 'studentPill studentPillInfo'
+                      }
+                    >
+                      {lostFoundStatusLabel(p.status)}
+                    </span>
                     <span className="studentMeta">{formatDate(p.createdAt)}</span>
+                  </div>
+
+                  <div className="studentMediaTitle">{p.title}</div>
+                  <div className="studentMediaMeta">
+                    <span className="studentMeta">{extractLostFoundLocation(p.description) || '—'}</span>
+                    <span className="studentDot">•</span>
+                    <span className="studentMeta">{resolveName(p)}</span>
                   </div>
                   <div className="studentMediaText">{p.description || '—'}</div>
                   <div className="studentMediaActions">
-                    <button type="button" className="studentSecondaryBtn">
-                      Sahibi ilə əlaqə
-                    </button>
-                    <button type="button" className="studentTertiaryBtn">
-                      Detallara bax
-                    </button>
+                    {p.createdByUserId === props.currentUserId ? (
+                      <button
+                        type="button"
+                        className="studentSecondaryBtn"
+                        onClick={() => {
+                          setEditingId(p.id)
+                          setTitle(p.title)
+                          setContact(p.contact)
+                          setImageUrl(p.imageUrl)
+                          setLocation(extractLostFoundLocation(p.description))
+                          const withoutLoc = p.description.replace(/^\s*(yer|location)\s*:\s*.*\n?/i, '')
+                          setDescription(withoutLoc)
+                        }}
+                      >
+                        Edit
+                      </button>
+                    ) : null}
+
+                    {p.createdByUserId === props.currentUserId && p.status !== 2 ? (
+                      <button
+                        type="button"
+                        className="studentTertiaryBtn"
+                        onClick={() => props.onSetStatus(p.id, 2)}
+                      >
+                        Resolved
+                      </button>
+                    ) : null}
+
+                    {p.createdByUserId === props.currentUserId ? (
+                      <button
+                        type="button"
+                        className="studentTertiaryBtn"
+                        onClick={() => props.onDelete(p.id)}
+                      >
+                        Delete
+                      </button>
+                    ) : null}
                   </div>
                   <div className="studentMediaFooter">
-                    <span className="studentMeta">{resolveName(p.createdByUserId)}</span>
                     <span className="studentMeta mono">{p.contact}</span>
                   </div>
                 </div>
@@ -131,6 +208,40 @@ export default function StudentLostFound(props: {
           </div>
         </section>
       </div>
+
+      {editingId ? (
+        <dialog className="adminModal" open>
+          <div className="adminModalHeader">
+            <div className="adminModalTitle">Lost &amp; Found Edit</div>
+            <button type="button" className="adminMiniBtn" onClick={() => setEditingId(null)}>
+              Close
+            </button>
+          </div>
+          <div className="adminModalBody">
+            <InputField label="Əşya adı" value={title} onChange={setTitle} placeholder="Əşya adı" />
+            <InputField label="Yer" value={location} onChange={setLocation} placeholder="Yer" />
+            <TextAreaField label="Təsvir" value={description} onChange={setDescription} placeholder="Təsvir" />
+            <InputField label="Əlaqə" value={contact} onChange={setContact} placeholder="Əlaqə" />
+            <InputField label="Image URL" value={imageUrl} onChange={setImageUrl} placeholder="https://..." />
+            <div className="adminModalActions">
+              <button type="button" className="adminCta adminCtaGhost" onClick={() => setEditingId(null)}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="adminCta"
+                onClick={() => {
+                  props.onUpdate(editingId, title, location, description, contact, imageUrl)
+                  setEditingId(null)
+                }}
+                disabled={!title.trim() || !location.trim() || !contact.trim()}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </dialog>
+      ) : null}
     </div>
   )
 }
