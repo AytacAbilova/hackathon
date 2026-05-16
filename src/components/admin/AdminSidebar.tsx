@@ -9,21 +9,21 @@ export default function AdminSidebar(props: {
   onLogout: () => void
 }) {
   const items: NavItem[] = [
-    { to: '/admin', label: 'Dashboard', icon: 'grid' },
-    { to: '/admin/users', label: 'User List', icon: 'users' },
-    { to: '/admin/announcements', label: 'Announcements', icon: 'megaphone' },
-    { to: '/admin/stats', label: 'Analytics', icon: 'chart' },
+    { to: '/admin', label: 'İdarə Paneli', icon: 'grid' },
+    { to: '/admin/users', label: 'İstifadəçi Siyahısı', icon: 'users' },
+    { to: '/admin/announcements', label: 'Elanlar', icon: 'megaphone' },
+    { to: '/admin/stats', label: 'Analitika', icon: 'chart' },
   ]
 
   const initials = props.user.fullName.trim().slice(0, 1).toUpperCase()
 
   return (
-    <aside className="adminSidebar" aria-label="Admin navigation">
+    <aside className="adminSidebar" aria-label="Admin naviqasiyası">
       <div className="adminBrand" role="button" tabIndex={0} onClick={() => props.onNavigate('/admin')}>
         <span className="adminBrandIcon">C</span>
         <div className="adminBrandText">
           <div className="adminBrandName">CampusConnect</div>
-          <div className="adminBrandTag">Academy Hub</div>
+          <div className="adminBrandTag">Akademiya Mərkəzi</div>
         </div>
       </div>
 
@@ -47,22 +47,21 @@ export default function AdminSidebar(props: {
 
       <div className="adminSidebarBottom">
         <button type="button" className="adminQuickAction" onClick={() => props.onNavigate('/admin/announcements')}>
-          + Quick Action
+          + Sürətli Əməliyyat
         </button>
 
         <div className="adminProfile">
           <div className="adminAvatar">{initials}</div>
           <div className="adminProfileMeta">
             <div className="adminProfileName">{props.user.fullName}</div>
-            <div className="adminProfileRole">Platform Admin</div>
+            <div className="adminProfileRole">Platform Administratoru</div>
           </div>
         </div>
 
         <button type="button" className="adminLogout" onClick={props.onLogout}>
-          Logout
+          Çıxış
         </button>
       </div>
     </aside>
   )
 }
-

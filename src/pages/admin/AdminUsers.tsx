@@ -95,9 +95,9 @@ export default function AdminUsers(props: {
     <div className="adminPage">
       <div className="adminHero adminHeroTight">
         <div>
-          <div className="adminWelcomeSmall">Manage Community</div>
+          <div className="adminWelcomeSmall">İcmanı İdarə Et</div>
           <div className="adminWelcomeSub">
-            Review and manage all active academy members.
+            Bütün aktiv akademiya üzvlərini nəzərdən keçirin və idarə edin.
           </div>
         </div>
         <div className="adminHeroActions">
@@ -107,11 +107,11 @@ export default function AdminUsers(props: {
               className="adminSearchInput"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search users..."
+              placeholder="İstifadəçi axtar..."
             />
           </div>
           <button type="button" className="adminCta" onClick={openCreate}>
-            + Add User
+            + İstifadəçi Əlavə Et
           </button>
         </div>
       </div>
@@ -119,26 +119,26 @@ export default function AdminUsers(props: {
       <div className="adminStatsGrid adminStatsGridTight">
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Total Users</span>
-            <span className="adminStatDelta">+4% this month</span>
+            <span className="adminStatLabel">Ümumi İstifadəçilər</span>
+            <span className="adminStatDelta">Bu ay +4%</span>
           </div>
           <div className="adminStatValue">{total}</div>
         </div>
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Active Students</span>
+            <span className="adminStatLabel">Aktiv Tələbələr</span>
           </div>
           <div className="adminStatValue">{students}</div>
         </div>
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Active Teachers</span>
+            <span className="adminStatLabel">Aktiv Müəllimlər</span>
           </div>
           <div className="adminStatValue">{teachers}</div>
         </div>
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Directory</span>
+            <span className="adminStatLabel">Kataloq</span>
           </div>
           <div className="adminStatValue">{filteredUsers.length}</div>
         </div>
@@ -147,8 +147,8 @@ export default function AdminUsers(props: {
       <section className="adminCard adminCardPadded">
         <div className="adminCardHeader adminCardHeaderRow">
           <div>
-            <div className="adminCardTitle">User Directory</div>
-            <div className="adminCardSubtitle">Showing {filteredUsers.length} of {total} users</div>
+            <div className="adminCardTitle">İstifadəçi Kataloqu</div>
+            <div className="adminCardSubtitle">{total} istifadəçidən {filteredUsers.length} nəfər göstərilir</div>
           </div>
         </div>
 
@@ -157,11 +157,11 @@ export default function AdminUsers(props: {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Full Name</th>
+                <th>Ad Soyad</th>
                 <th>Email</th>
-                <th>Role</th>
-                <th>Created Date</th>
-                <th className="adminTableRight">Actions</th>
+                <th>Rol</th>
+                <th>Yaradılma Tarixi</th>
+                <th className="adminTableRight">Əməliyyatlar</th>
               </tr>
             </thead>
             <tbody>
@@ -181,10 +181,10 @@ export default function AdminUsers(props: {
                   <td className="adminMeta">{formatDate(u.createdAt)}</td>
                   <td className="adminTableRight">
                     <button type="button" className="adminMiniBtn" onClick={() => openEdit(u)}>
-                      Edit
+                      Redaktə
                     </button>
                     <button type="button" className="adminMiniBtn adminMiniBtnDanger" onClick={() => props.onDelete(u.id)}>
-                      Delete
+                      Sil
                     </button>
                   </td>
                 </tr>
@@ -194,7 +194,7 @@ export default function AdminUsers(props: {
         </div>
 
         <div className="adminTableFooter">
-          <div className="adminMeta">Showing 1-{Math.min(filteredUsers.length, 12)} of {filteredUsers.length} users</div>
+          <div className="adminMeta">{filteredUsers.length} istifadəçidən 1-{Math.min(filteredUsers.length, 12)} göstərilir</div>
           <div className="adminPager" aria-hidden="true">
             <span className="adminPagerBtn adminPagerBtnActive">1</span>
             <span className="adminPagerBtn">2</span>
@@ -206,9 +206,9 @@ export default function AdminUsers(props: {
       {open ? (
         <dialog className="adminModal" open>
           <div className="adminModalHeader">
-            <div className="adminModalTitle">{mode === 'create' ? 'Add User' : 'Edit User'}</div>
+            <div className="adminModalTitle">{mode === 'create' ? 'İstifadəçi Əlavə Et' : 'İstifadəçini Redaktə Et'}</div>
             <button type="button" className="adminMiniBtn" onClick={() => setOpen(false)}>
-              Close
+              Bağla
             </button>
           </div>
 
@@ -249,10 +249,10 @@ export default function AdminUsers(props: {
 
             <div className="adminModalActions">
               <button type="button" className="adminCta adminCtaGhost" onClick={() => setOpen(false)}>
-                Cancel
+                Ləğv Et
               </button>
               <button type="button" className="adminCta" onClick={submit} disabled={!canSubmit}>
-                {mode === 'create' ? 'Create' : 'Save'}
+                {mode === 'create' ? 'Yarat' : 'Yadda Saxla'}
               </button>
             </div>
           </div>

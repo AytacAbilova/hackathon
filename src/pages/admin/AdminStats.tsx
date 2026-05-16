@@ -6,25 +6,25 @@ export default function AdminStats(props: { stats: Stats }) {
       <div className="adminStatsGrid">
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Total Users</span>
+            <span className="adminStatLabel">Ümumi İstifadəçilər</span>
           </div>
           <div className="adminStatValue">{props.stats.usersTotal}</div>
         </div>
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Approved Announcements</span>
+            <span className="adminStatLabel">Təsdiqlənmiş Elanlar</span>
           </div>
           <div className="adminStatValue">{props.stats.announcementsApproved}</div>
         </div>
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Pending Announcements</span>
+            <span className="adminStatLabel">Gözləyən Elanlar</span>
           </div>
           <div className="adminStatValue">{props.stats.announcementsPending}</div>
         </div>
         <div className="adminStatCard">
           <div className="adminStatTop">
-            <span className="adminStatLabel">Events</span>
+            <span className="adminStatLabel">Tədbirlər</span>
           </div>
           <div className="adminStatValue">{props.stats.eventsTotal}</div>
         </div>
@@ -33,9 +33,9 @@ export default function AdminStats(props: { stats: Stats }) {
       <div className="adminMainGrid">
         <section className="adminWideCard">
           <div className="adminWideCardHeader">
-            <div className="adminWideCardTitle">User Growth</div>
+            <div className="adminWideCardTitle">İstifadəçi Artımı</div>
             <div className="adminMeta">
-              Admin: {props.stats.usersByRole.admin} · Teacher: {props.stats.usersByRole.teacher} · Student:{' '}
+              Admin: {props.stats.usersByRole.admin} · Müəllim: {props.stats.usersByRole.teacher} · Tələbə:{' '}
               {props.stats.usersByRole.student}
             </div>
           </div>
@@ -46,17 +46,17 @@ export default function AdminStats(props: { stats: Stats }) {
           <section className="adminCard">
             <div className="adminCardHeader">
               <div>
-                <div className="adminCardTitle">Student Modules</div>
-                <div className="adminCardSubtitle">Lost &amp; Found and Team Finder activity</div>
+                <div className="adminCardTitle">Tələbə Modulları</div>
+                <div className="adminCardSubtitle">İtirilmiş &amp; Tapılmış və Komanda Tapıcı fəaliyyəti</div>
               </div>
             </div>
             <div className="adminMiniGrid">
               <div className="adminMiniKpi">
-                <div className="adminMiniKpiLabel">Lost &amp; Found</div>
+                <div className="adminMiniKpiLabel">İtirilmiş &amp; Tapılmış</div>
                 <div className="adminMiniKpiValue">{props.stats.lostFoundTotal}</div>
               </div>
               <div className="adminMiniKpi">
-                <div className="adminMiniKpiLabel">Team Finder</div>
+                <div className="adminMiniKpiLabel">Komanda Tapıcı</div>
                 <div className="adminMiniKpiValue">{props.stats.teamPostsTotal}</div>
               </div>
             </div>
@@ -65,12 +65,12 @@ export default function AdminStats(props: { stats: Stats }) {
           <section className="adminCard">
             <div className="adminCardHeader">
               <div>
-                <div className="adminCardTitle">System Notes</div>
-                <div className="adminCardSubtitle">Operational summary</div>
+                <div className="adminCardTitle">Sistem Qeydləri</div>
+                <div className="adminCardSubtitle">Əməliyyat xülasəsi</div>
               </div>
             </div>
             <div className="adminHintBox">
-              Real-time monitoring and alerting can be connected later via backend endpoints.
+              Real vaxt monitorinqi və xəbərdarlıq sistemi sonradan backend endpointləri vasitəsilə qoşula bilər.
             </div>
           </section>
         </aside>
