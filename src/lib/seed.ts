@@ -43,6 +43,7 @@ export function seedIfEmpty() {
       title: 'Akademiya elanları platforması istifadəyə verildi',
       content:
         'Bu platformada dərs cədvəli, elanlar, eventlər, vakansiyalar və daha çoxu olacaq.',
+      category: 2,
       status: 'approved',
       createdAt: nowIso(),
       createdByUserId: teacherId,
@@ -52,6 +53,7 @@ export function seedIfEmpty() {
       title: 'Hackathon komandası axtarışı',
       content:
         'Komanda qurmaq üçün Team Finder bölməsindən istifadə edin. Skill-ləri qeyd etməyi unutmayın.',
+      category: 1,
       status: 'approved',
       createdAt: nowIso(),
       createdByUserId: adminId,

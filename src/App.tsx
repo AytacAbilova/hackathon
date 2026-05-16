@@ -23,8 +23,10 @@ import useHashRoute from './hooks/useHashRoute'
 import { getApiErrorMessage, getStoredTokens } from './lib/api'
 import { getSessionFromAccessToken } from './lib/jwt'
 import * as authService from './services/auth'
+import * as announcementsService from './services/announcements'
 import type {
   Announcement,
+  AnnouncementCategory,
   EventItem,
   LostFoundPost,
   LostFoundType,
@@ -70,9 +72,8 @@ function App() {
     }
     return [localUser, ...baseUsers]
   })
-  const [announcements, setAnnouncements] = useState<Announcement[]>(() =>
-    readJson<Announcement[]>(storageKeys.announcements, []),
-  )
+  const [approvedAnnouncements, setApprovedAnnouncements] = useState<Announcement[]>([])
+  const [pendingAnnouncements, setPendingAnnouncements] = useState<Announcement[]>([])
   const [events, setEvents] = useState<EventItem[]>(() => readJson<EventItem[]>(storageKeys.events, []))
   const [lostFound, setLostFound] = useState<LostFoundPost[]>(() =>
     readJson<LostFoundPost[]>(storageKeys.lostFound, []),
@@ -97,10 +98,6 @@ function App() {
   useEffect(() => {
     writeJson(storageKeys.users, users)
   }, [users])
-
-  useEffect(() => {
-    writeJson(storageKeys.announcements, announcements)
-  }, [announcements])
 
   useEffect(() => {
     writeJson(storageKeys.events, events)
@@ -151,6 +148,8 @@ function App() {
     const handleLogout = () => {
       localStorage.removeItem(storageKeys.currentUserId)
       setCurrentUserId(null)
+      setApprovedAnnouncements([])
+      setPendingAnnouncements([])
       toast.success('Çıxış edildi')
       navigate('/login')
     }
@@ -227,7 +226,61 @@ function App() {
     }
   }
 
-  const createAnnouncement = (title: string, content: string) => {
+  const loadApprovedAnnouncements = async (category?: AnnouncementCategory) => {
+    try {
+      const res = await announcementsService.listApproved({ page: 1, pageSize: 50, category })
+      setApprovedAnnouncements(sortByCreatedAtDesc(res.items))
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
+    }
+  }
+
+  const loadPendingAnnouncements = async () => {
+    try {
+      const res = await announcementsService.listPending({ page: 1, pageSize: 50 })
+      setPendingAnnouncements(sortByCreatedAtDesc(res.items))
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false
+
+    announcementsService
+      .listApproved({ page: 1, pageSize: 50 })
+      .then((res) => {
+        if (cancelled) return
+        setApprovedAnnouncements(sortByCreatedAtDesc(res.items))
+      })
+      .catch((e) => {
+        if (cancelled) return
+        toast.error(getApiErrorMessage(e))
+      })
+
+    if (currentUser?.role === 'admin') {
+      announcementsService
+        .listPending({ page: 1, pageSize: 50 })
+        .then((res) => {
+          if (cancelled) return
+          setPendingAnnouncements(sortByCreatedAtDesc(res.items))
+        })
+        .catch((e) => {
+          if (cancelled) return
+          toast.error(getApiErrorMessage(e))
+        })
+    }
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentUser?.role])
+
+  const createAnnouncement = async (
+    title: string,
+    content: string,
+    category: AnnouncementCategory,
+  ) => {
     if (!currentUser) return
     if (!canCreateAnnouncement(currentUser.role)) {
       toast.error('Elanı yalnız müəllim və admin yarada bilər')
@@ -237,32 +290,43 @@ function App() {
       toast.error('Başlıq və mətn mütləqdir')
       return
     }
-    const newAnn: Announcement = {
-      id: makeId('ann'),
-      title: title.trim(),
-      content: content.trim(),
-      status: currentUser.role === 'admin' ? 'approved' : 'pending',
-      createdAt: nowIso(),
-      createdByUserId: currentUser.id,
+
+    try {
+      await announcementsService.create({
+        title: title.trim(),
+        content: content.trim(),
+        category,
+      })
+      toast.success('Elan göndərildi')
+      await loadApprovedAnnouncements()
+      if (currentUser.role === 'admin') await loadPendingAnnouncements()
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
     }
-    setAnnouncements((prev) => [newAnn, ...prev])
-    toast.success(
-      newAnn.status === 'approved' ? 'Elan dərc olundu' : 'Elan təsdiqə göndərildi',
-    )
   }
 
-  const approveAnnouncement = (id: string) => {
+  const approveAnnouncement = async (id: string) => {
     if (currentUser?.role !== 'admin') return
-    setAnnouncements((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: 'approved' } : a)),
-    )
-    toast.success('Elan təsdiqləndi')
+    try {
+      await announcementsService.approve(id)
+      toast.success('Elan təsdiqləndi')
+      await loadApprovedAnnouncements()
+      await loadPendingAnnouncements()
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
+    }
   }
 
-  const deleteAnnouncement = (id: string) => {
+  const deleteAnnouncement = async (id: string) => {
     if (currentUser?.role !== 'admin') return
-    setAnnouncements((prev) => prev.filter((a) => a.id !== id))
-    toast.success('Elan silindi')
+    try {
+      await announcementsService.remove(id)
+      toast.success('Elan silindi')
+      await loadApprovedAnnouncements()
+      await loadPendingAnnouncements()
+    } catch (e) {
+      toast.error(getApiErrorMessage(e))
+    }
   }
 
   const createEvent = (
@@ -364,14 +428,6 @@ function App() {
     setTeamPosts((prev) => [post, ...prev])
     toast.success('Komanda elanı əlavə olundu')
   }
-
-  const approvedAnnouncements = useMemo(() => {
-    return sortByCreatedAtDesc(announcements.filter((a) => a.status === 'approved'))
-  }, [announcements])
-
-  const pendingAnnouncements = useMemo(() => {
-    return sortByCreatedAtDesc(announcements.filter((a) => a.status === 'pending'))
-  }, [announcements])
 
   const eventsSorted = useMemo(() => sortByCreatedAtDesc(events), [events])
   const lostFoundSorted = useMemo(() => sortByCreatedAtDesc(lostFound), [lostFound])

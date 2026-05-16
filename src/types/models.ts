@@ -11,13 +11,18 @@ export type User = {
 
 export type AnnouncementStatus = 'pending' | 'approved'
 
+export type AnnouncementCategory = 1 | 2 | 3 | 4
+
 export type Announcement = {
   id: string
   title: string
   content: string
+  category: AnnouncementCategory
   status: AnnouncementStatus
   createdAt: string
+  updatedAt?: string
   createdByUserId: string
+  createdByName?: string
 }
 
 export type EventItem = {

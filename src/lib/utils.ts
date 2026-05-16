@@ -1,4 +1,4 @@
-import type { Role } from '../types/models'
+import type { AnnouncementCategory, Role } from '../types/models'
 
 export function nowIso() {
   return new Date().toISOString()
@@ -40,6 +40,13 @@ export function roleLabel(role: Role) {
 
 export function canCreateAnnouncement(role: Role) {
   return role === 'admin' || role === 'teacher'
+}
+
+export function announcementCategoryLabel(category: AnnouncementCategory) {
+  if (category === 1) return 'General'
+  if (category === 2) return 'Academic'
+  if (category === 3) return 'Social'
+  return 'Career'
 }
 
 export function canAccess(route: string, role: Role) {

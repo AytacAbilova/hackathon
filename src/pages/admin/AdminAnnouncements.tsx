@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { InputField, TextAreaField } from '../../components/ui/Fields'
-import type { Announcement, User } from '../../types/models'
-import { formatDate } from '../../lib/utils'
+import type { Announcement, AnnouncementCategory, User } from '../../types/models'
+import { announcementCategoryLabel, formatDate } from '../../lib/utils'
 
 export default function AdminAnnouncements(props: {
   pending: Announcement[]
@@ -9,15 +9,15 @@ export default function AdminAnnouncements(props: {
   users: User[]
   onApprove: (id: string) => void
   onDelete: (id: string) => void
-  onCreate: (title: string, content: string) => void
+  onCreate: (title: string, content: string, category: AnnouncementCategory) => void
 }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [category, setCategory] = useState<'Academic' | 'Career' | 'General'>('Academic')
+  const [category, setCategory] = useState<AnnouncementCategory>(2)
   const [tab, setTab] = useState<'all' | 'approved' | 'pending'>('all')
 
-  const resolveName = (userId: string) =>
-    props.users.find((u) => u.id === userId)?.fullName ?? '—'
+  const resolveName = (a: Announcement) =>
+    props.users.find((u) => u.id === a.createdByUserId)?.fullName ?? a.createdByName ?? '—'
 
   const list = useMemo(() => {
     if (tab === 'approved') return props.approved
@@ -46,10 +46,16 @@ export default function AdminAnnouncements(props: {
             <div className="adminFormSide">
               <label className="field">
                 <span className="fieldLabel">Category</span>
-                <select className="select" value={category} onChange={(e) => setCategory(e.target.value as typeof category)}>
-                  <option value="Academic">Academic</option>
-                  <option value="Career">Career</option>
-                  <option value="General">General</option>
+                <select
+                  className="select"
+                  value={category}
+                  onChange={(e) => setCategory(Number(e.target.value) as AnnouncementCategory)}
+                >
+                  {[1, 2, 3, 4].map((c) => (
+                    <option key={c} value={c}>
+                      {announcementCategoryLabel(c as AnnouncementCategory)}
+                    </option>
+                  ))}
                 </select>
               </label>
 
@@ -61,7 +67,7 @@ export default function AdminAnnouncements(props: {
                 type="button"
                 className="adminCta adminCtaFull"
                 onClick={() => {
-                  props.onCreate(title, content)
+                  props.onCreate(title, content, category)
                   setTitle('')
                   setContent('')
                 }}
@@ -118,7 +124,7 @@ export default function AdminAnnouncements(props: {
                       </span>
                       <span className="adminMeta">{formatDate(a.createdAt)}</span>
                       <span className="adminDot">•</span>
-                      <span className="adminMeta">{resolveName(a.createdByUserId)}</span>
+                      <span className="adminMeta">{resolveName(a)}</span>
                     </div>
                     <div className="adminAnnouncementActions">
                       {isPending ? (
