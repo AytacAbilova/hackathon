@@ -3,6 +3,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import LandingPage from './pages/public/LandingPage'
 import LoginView from './pages/auth/LoginView'
 import RegisterView from './pages/auth/RegisterView'
 import AdminHome from './pages/admin/AdminHome'
@@ -354,6 +355,7 @@ function App() {
   }, [currentUser])
 
   const title = useMemo(() => {
+    if (route === '/') return 'Home'
     if (route.startsWith('/admin/users')) return 'User list'
     if (route.startsWith('/admin/announcements')) return 'Elanlar'
     if (route.startsWith('/admin/stats')) return 'Statistik dashboard'
@@ -365,12 +367,85 @@ function App() {
     if (route.startsWith('/student/team-finder')) return 'Team Finder'
     if (route.startsWith('/student')) return 'Tələbə dashboard'
     if (route === '/register') return 'Qeydiyyat'
+    if (route === '/login') return 'Login'
     return 'Login'
   }, [route])
 
   const userName = currentUser?.fullName ?? 'Qonaq'
   const userRole = currentUser?.role ?? null
   const userRoleText = userRole ? roleLabel(userRole) : null
+
+  const adminCreateUser = (data: {
+    fullName: string
+    email: string
+    password: string
+    role: Role
+  }) => {
+    if (currentUser?.role !== 'admin') return
+    const normalizedEmail = data.email.trim().toLowerCase()
+    if (!data.fullName.trim() || !normalizedEmail || !data.password) {
+      toast.error('Bütün sahələr doldurulmalıdır')
+      return
+    }
+    const exists = users.some((u) => u.email.toLowerCase() === normalizedEmail)
+    if (exists) {
+      toast.error('Bu email artıq mövcuddur')
+      return
+    }
+    const newUser: User = {
+      id: makeId('usr'),
+      fullName: data.fullName.trim(),
+      email: normalizedEmail,
+      password: data.password,
+      role: data.role,
+      createdAt: nowIso(),
+    }
+    setUsers((prev) => [newUser, ...prev])
+    toast.success('User yaradıldı')
+  }
+
+  const adminUpdateUser = (
+    id: string,
+    patch: { fullName: string; email: string; password?: string; role: Role },
+  ) => {
+    if (currentUser?.role !== 'admin') return
+    const normalizedEmail = patch.email.trim().toLowerCase()
+    if (!patch.fullName.trim() || !normalizedEmail) {
+      toast.error('Ad və email mütləqdir')
+      return
+    }
+    const exists = users.some(
+      (u) => u.id !== id && u.email.toLowerCase() === normalizedEmail,
+    )
+    if (exists) {
+      toast.error('Bu email artıq mövcuddur')
+      return
+    }
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === id
+          ? {
+              ...u,
+              fullName: patch.fullName.trim(),
+              email: normalizedEmail,
+              role: patch.role,
+              ...(patch.password ? { password: patch.password } : {}),
+            }
+          : u,
+      ),
+    )
+    toast.success('User yeniləndi')
+  }
+
+  const adminDeleteUser = (id: string) => {
+    if (currentUser?.role !== 'admin') return
+    if (id === currentUserId) {
+      toast.error('Öz hesabını silə bilməzsən')
+      return
+    }
+    setUsers((prev) => prev.filter((u) => u.id !== id))
+    toast.success('User silindi')
+  }
 
   return (
     <>
@@ -380,13 +455,13 @@ function App() {
           userName={userName}
           userRole={userRoleText}
           onLogoClick={() => {
-            if (!currentUser) navigate('/login')
+            if (!currentUser) navigate('/')
             else navigate(getRoleHome(currentUser.role))
           }}
           onLogout={currentUser ? logout : undefined}
         />
 
-        <div className="appBody">
+        <div className={currentUser ? 'appBody' : 'appBody appBodyPublic'}>
           {currentUser ? (
             <aside className="sidebar" aria-label="Navigation">
               <div className="sidebarSection">
@@ -418,7 +493,9 @@ function App() {
           ) : null}
 
           <main className="content">
-            {!currentUser && route !== '/register' ? (
+            {!currentUser && route === '/' ? <LandingPage /> : null}
+
+            {!currentUser && route !== '/register' && route !== '/' ? (
               <LoginView onLogin={login} onGoRegister={() => navigate('/register')} />
             ) : null}
 
@@ -440,7 +517,12 @@ function App() {
             ) : null}
 
             {currentUser?.role === 'admin' && route === '/admin/users' ? (
-              <AdminUsers users={sortByCreatedAtDesc(users)} />
+              <AdminUsers
+                users={sortByCreatedAtDesc(users)}
+                onCreate={adminCreateUser}
+                onUpdate={adminUpdateUser}
+                onDelete={adminDeleteUser}
+              />
             ) : null}
 
             {currentUser?.role === 'admin' && route === '/admin/announcements' ? (
