@@ -47,7 +47,7 @@ export default function LoginView(props: {
         </Button>
       </div>
 
-      <div className="demoBox">
+      {/* <div className="demoBox">
         <div className="demoTitle">Demo hesablar</div>
         <div className="demoGrid">
           <div className="demoItem">
@@ -63,7 +63,7 @@ export default function LoginView(props: {
             <div className="demoMeta">student@academy.az / student123</div>
           </div>
         </div>
-      </div>
+      </div> */}
     </AuthCard>
   )
 }
