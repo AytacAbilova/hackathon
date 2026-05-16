@@ -1,21 +1,19 @@
-import { useState } from "react";
-import Button from "../../components/ui/Button";
-import { InputField, TextAreaField } from "../../components/ui/Fields";
+import { useState } from 'react'
+import Button from '../../components/ui/Button'
+import { InputField, TextAreaField } from '../../components/ui/Fields'
 
 export default function TeacherAnnouncements(props: {
-  onCreate: (title: string, content: string) => void;
+  onCreate: (title: string, content: string) => void
 }) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
 
   return (
     <div className="page">
       <div className="pageHeader">
         <div>
           <h2 className="pageTitle">Elan yaratma</h2>
-          <p className="pageSubtitle">
-            Yaradılan elan admin tərəfindən təsdiqlənəndən sonra görünəcək
-          </p>
+          <p className="pageSubtitle">Yaradılan elan admin tərəfindən təsdiqlənəndən sonra görünəcək</p>
         </div>
       </div>
 
@@ -37,9 +35,9 @@ export default function TeacherAnnouncements(props: {
             <Button
               variant="primary"
               onClick={() => {
-                props.onCreate(title, content);
-                setTitle("");
-                setContent("");
+                props.onCreate(title, content)
+                setTitle('')
+                setContent('')
               }}
               disabled={!title.trim() || !content.trim()}
             >
@@ -49,5 +47,5 @@ export default function TeacherAnnouncements(props: {
         </div>
       </div>
     </div>
-  );
+  )
 }

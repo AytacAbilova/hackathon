@@ -1,9 +1,9 @@
-import type { Announcement, EventItem } from "../../types/models";
-import { formatDate } from "../../lib/utils";
+import type { Announcement, EventItem } from '../../types/models'
+import { formatDate } from '../../lib/utils'
 
 export default function TeacherHome(props: {
-  approvedAnnouncements: Announcement[];
-  events: EventItem[];
+  approvedAnnouncements: Announcement[]
+  events: EventItem[]
 }) {
   return (
     <div className="page">
@@ -23,9 +23,7 @@ export default function TeacherHome(props: {
             </div>
           </div>
           <div className="list">
-            {props.approvedAnnouncements.length === 0 ? (
-              <div className="empty">Elan yoxdur</div>
-            ) : null}
+            {props.approvedAnnouncements.length === 0 ? <div className="empty">Elan yoxdur</div> : null}
             {props.approvedAnnouncements.map((a) => (
               <div key={a.id} className="listItem compact">
                 <div className="listTop">
@@ -45,9 +43,7 @@ export default function TeacherHome(props: {
             </div>
           </div>
           <div className="list">
-            {props.events.length === 0 ? (
-              <div className="empty">Event yoxdur</div>
-            ) : null}
+            {props.events.length === 0 ? <div className="empty">Event yoxdur</div> : null}
             {props.events.map((e) => (
               <div key={e.id} className="listItem compact">
                 <div className="listTop">
@@ -57,9 +53,7 @@ export default function TeacherHome(props: {
                 <div className="listMeta">
                   <span className="muted">{e.location}</span>
                   <span className="dot">•</span>
-                  <span className="muted">
-                    Başlayır: {formatDate(e.startsAt)}
-                  </span>
+                  <span className="muted">Başlayır: {formatDate(e.startsAt)}</span>
                 </div>
               </div>
             ))}
@@ -67,5 +61,5 @@ export default function TeacherHome(props: {
         </div>
       </div>
     </div>
-  );
+  )
 }
