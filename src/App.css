@@ -14,7 +14,7 @@
   align-items: center;
   gap: 16px;
   padding: 0 18px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgb(170, 166, 166);
   background: linear-gradient(180deg, var(--surface), transparent);
   backdrop-filter: blur(10px);
 }
@@ -353,26 +353,27 @@
 
 .fieldLabel {
   font-size: 13px;
-  color: var(--text);
+  color: rgb(53, 49, 49);
 }
 
 .input,
 .textarea,
 .select {
   border-radius: 14px;
-  border: 1px solid var(--border);
+  border: 1px solid graylinear-gradient(135deg, var(--accent), rgba(59, 130, 246, 0.95));;
   background: rgba(255, 255, 255, 0.55);
   color: var(--text-h);
   padding: 12px 12px;
   font: 15px/140% var(--sans);
   outline: none;
+  color: black;
 }
 
 @media (prefers-color-scheme: dark) {
   .input,
   .textarea,
   .select {
-    background: rgba(22, 23, 29, 0.65);
+    background: rgba(239, 240, 243, 0.747);
   }
 }
 
@@ -717,9 +718,9 @@
 .authCard {
   width: 520px;
   max-width: 100%;
-  border: 1px solid var(--border);
+  /* border: 1px solid var(--border); */
   border-radius: 22px;
-  background: var(--surface);
+  background: white;
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow);
   padding: 18px;
@@ -733,14 +734,14 @@
 }
 
 .authTitle {
-  color: var(--text-h);
+  color: black;
   font-weight: 800;
   font-size: 26px;
   letter-spacing: -0.6px;
 }
 
 .authSubtitle {
-  color: var(--text);
+  color: rgb(53, 49, 49);
 }
 
 .authFooter {
@@ -859,7 +860,7 @@
 }
 
 .footer {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgb(170, 166, 166);
   padding: 26px 18px 0;
 }
 
@@ -933,7 +934,7 @@
 }
 
 .footerBottom {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgb(170, 166, 166);
   padding: 14px 18px;
 }
 
